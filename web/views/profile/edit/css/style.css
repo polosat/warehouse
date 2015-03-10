@@ -1,0 +1,16 @@
+#profile_form {
+  width: 400px;
+}
+
+#login, #phone, #birthday {
+  width: 200px;
+}
+
+#password,
+#confirm_password,
+#first_name,
+#last_name,
+#e_mail,
+#password_current {
+  width: 390px;
+}

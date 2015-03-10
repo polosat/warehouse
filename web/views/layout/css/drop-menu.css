@@ -1,0 +1,52 @@
+.drop-menu {
+  position: relative;
+  margin: 0;
+  padding: 3px 0;
+}
+
+.drop-menu li {
+  cursor: default;
+  list-style: none;
+}
+
+.drop-menu a {
+  display: inline-block;
+  width: 100%;
+  outline: none;
+  cursor: pointer;
+  text-decoration: none;
+  background: transparent !important;
+}
+
+.drop-menu ul {
+  position: absolute;
+  line-height: normal;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  top: 100%;
+  left: 0;
+  border-bottom: 1px solid;
+  visibility: hidden;
+}
+
+.drop-menu:hover ul {
+  visibility: visible
+}
+
+.drop-menu ul li {
+  line-height: 22px;
+  border: 1px solid;
+  border-bottom: 0;
+}
+
+.drop-menu ul li:hover {
+  background-color: #f0f0f0 !important;
+}
+
+.drop-menu ul li:hover span {
+  background: transparent !important;
+  color: black !important;
+}
+
+

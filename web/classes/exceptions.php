@@ -1,18 +1,13 @@
 <?php
-class AppException extends Exception {
-  function __construct($message, $code = 0, Exception $previous = null) {
-    parent::__construct($message, $code, $previous);
+class InvalidRequestException extends DomainException {
+  public function __construct() {
+    $uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+    parent::__construct($uri);
   }
 }
 
-class NoDifferenceException extends Exception {
-  function __construct() {
-    parent::__construct();
-  }
-}
-
-class UniqueViolationException extends Exception {
-  function __construct(Exception $previous) {
-    parent::__construct("", 0, $previous);
+class DatabaseException extends RuntimeException {
+  function __construct(PDOException $pdoException = null) {
+    parent::__construct('Database error', $pdoException->code, $pdoException);
   }
 }

@@ -1,0 +1,12 @@
+#login_form {
+  width: 300px;
+}
+
+#login,
+#password {
+  width: 290px;
+}
+
+#button_box {
+  margin-top: 20px;
+}
