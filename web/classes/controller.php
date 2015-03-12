@@ -63,10 +63,11 @@ abstract class Controller {
       $context->PushCallback($callback);
     }
 
-    $callbackRequest = new Request();
-    $callbackRequest->language = $request->language;
-    $callbackRequest->controller = $controller;
-    $callbackRequest->action = $action;
+    $callbackRequest = new Request(
+      $request->language,
+      $controller,
+      $action
+    );
 
     return $callbackRequest;
   }

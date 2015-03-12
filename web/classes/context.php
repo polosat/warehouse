@@ -3,11 +3,14 @@ class ModelContext {
   public $Dsn;
   public $DbUser;
   public $DbPassword;
+  public $StoragePath;
 
-  public function __construct($dsn, $user, $password) {
+  public function __construct($dsn, $user, $password, $storagePath, $storageUri) {
     $this->Dsn = $dsn;
     $this->DbUser = $user;
     $this->DbPassword = $password;
+    $this->StoragePath = $storagePath;
+    $this->StorageUri = $storageUri;
   }
 }
 
@@ -24,7 +27,7 @@ class ControllerContext extends ModelContext {
   public function __construct(Request $request, Session $session) {
     // Setup database
     $dsn = 'mysql:host='. Settings::DB_HOST . ';dbname='. Settings::DB_NAME . ';charset=' . Settings::DB_CHARSET;
-    parent::__construct($dsn, Settings::DB_USER, Settings::DB_PASSWORD);
+    parent::__construct($dsn, Settings::DB_USER, Settings::DB_PASSWORD, Settings::STORAGE_PATH, Settings::STORAGE_URI);
 
     $this->request = $request;
     $this->session = $session;

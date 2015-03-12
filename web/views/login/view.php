@@ -13,11 +13,16 @@ class LoginView extends LayoutView {
   public function __construct(LoginViewBag $bag, $language) {
     parent::__construct($bag, $language);
     $this->LoginStrings = LoginViewStrings::GetInstance($language);
+  }
+
+  protected function BeforeLayoutRender() {
+    /** @var LoginViewBag $bag */
+    $bag = $this->Bag;
 
     $strings = $this->LoginStrings;
-    $this->Bag->headerTitle = $strings::HEADER_TITLE;
-
-    $this->Bag->stylesheets[] = '/views/login/css/style.css';
+    $bag->headerTitle = $strings::HEADER_TITLE;
+    $bag->stylesheets[] = '/views/login/css/style.css';
+    $this->focusedElement = empty($bag->userName) ? LoginView::FIELD_NAME_LOGIN : LoginView::FIELD_NAME_PASSWORD;
   }
 
   protected function RenderBody() {

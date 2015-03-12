@@ -23,7 +23,7 @@ class ProfileController extends Controller {
 
     if ($callback instanceof ShowProfileCallback) {
       if ($callback->reason == ShowProfileCallback::REASON_PROFILE_CHANGED) {
-        $viewBag->messageBox = new MessageBox($strings::MESSAGE_PROFILE_CHANGED, MessageBox::TYPE_INFO);
+        $viewBag->alert = new MessageBox($strings::MESSAGE_PROFILE_CHANGED, MessageBox::TYPE_INFO);
       }
       else {
         throw new LogicException('Unexpected redirect reason.');
@@ -62,7 +62,7 @@ class ProfileController extends Controller {
         throw new LogicException('Unexpected redirect reason.');
 
       if (isset($callback->OperationResult->Errors[ProfileOperationResult::ERROR_DUPLICATED_RECORD])) {
-        $viewBag->messageBox = new MessageBox($strings::ERROR_NOT_CHANGED);
+        $viewBag->alert = new MessageBox($strings::ERROR_NOT_CHANGED);
       }
       else {
         $this->PopulateValidationErrors($view, $callback->OperationResult);
@@ -163,7 +163,7 @@ class ProfileController extends Controller {
 
     if ($operationResult->Succeeded()) {
       $callback = new LoginCallback(LoginCallback::REASON_SHOW_MESSAGE);
-      $callback->messageBox = new MessageBox($strings::MESSAGE_NEW_OK, MessageBox::TYPE_INFO);
+      $callback->alert = new MessageBox($strings::MESSAGE_NEW_OK, MessageBox::TYPE_INFO);
       return $this->CreateCallbackRequest($callback, Application::LOGIN_CONTROLLER);
     }
 
@@ -197,7 +197,7 @@ class ProfileController extends Controller {
     $strings = $view->ProfileStrings;
 
     if (isset($operationResult->Errors[ProfileOperationResult::ERROR_DUPLICATED_RECORD])) {
-      $viewBag->messageBox = new MessageBox($strings::ERROR_NOT_CHANGED);
+      $viewBag->alert = new MessageBox($strings::ERROR_NOT_CHANGED);
     }
     else {
       foreach ($operationResult->Errors as $error) {
@@ -210,12 +210,8 @@ class ProfileController extends Controller {
             $viewBag->validationErrors[EditProfileView::FIELD_NAME_LOGIN] = $strings::ERROR_LOGIN_EXISTS;
             break;
 
-          case ProfileOperationResult::ERROR_INVALID_FIRST_NAME:
-            $viewBag->validationErrors[EditProfileView::FIELD_NAME_FIRST_NAME] = $strings::ERROR_FIRST_NAME;
-            break;
-
-          case ProfileOperationResult::ERROR_INVALID_LAST_NAME:
-            $viewBag->validationErrors[EditProfileView::FIELD_NAME_LAST_NAME] = $strings::ERROR_LAST_NAME;
+          case ProfileOperationResult::ERROR_BAD_CURRENT_PASSWORD:
+            $viewBag->validationErrors[EditProfileView::FIELD_NAME_PASSWORD_CURRENT] = $strings::ERROR_NOT_AUTHENTICATED;
             break;
 
           case ProfileOperationResult::ERROR_INVALID_PASSWORD:
@@ -226,20 +222,24 @@ class ProfileController extends Controller {
             $viewBag->validationErrors[EditProfileView::FIELD_NAME_PASSWORD_CONFIRM] = $strings::ERROR_PASSWORD_CONFIRM;
             break;
 
-          case ProfileOperationResult::ERROR_INVALID_EMAIL:
-            $viewBag->validationErrors[EditProfileView::FIELD_NAME_EMAIL] = $strings::ERROR_EMAIL_FORMAT;
+          case ProfileOperationResult::ERROR_INVALID_FIRST_NAME:
+            $viewBag->validationErrors[EditProfileView::FIELD_NAME_FIRST_NAME] = $strings::ERROR_FIRST_NAME;
             break;
 
-          case ProfileOperationResult::ERROR_INVALID_PHONE:
-            $viewBag->validationErrors[EditProfileView::FIELD_NAME_PHONE] = $strings::ERROR_PHONE_FORMAT;
+          case ProfileOperationResult::ERROR_INVALID_LAST_NAME:
+            $viewBag->validationErrors[EditProfileView::FIELD_NAME_LAST_NAME] = $strings::ERROR_LAST_NAME;
             break;
 
           case ProfileOperationResult::ERROR_INVALID_BIRTHDAY:
             $viewBag->validationErrors[EditProfileView::FIELD_NAME_BIRTHDAY] = $strings::ERROR_BIRTHDAY;
             break;
 
-          case ProfileOperationResult::ERROR_BAD_CURRENT_PASSWORD:
-            $viewBag->validationErrors[EditProfileView::FIELD_NAME_PASSWORD_CURRENT] = $strings::ERROR_NOT_AUTHENTICATED;
+          case ProfileOperationResult::ERROR_INVALID_PHONE:
+            $viewBag->validationErrors[EditProfileView::FIELD_NAME_PHONE] = $strings::ERROR_PHONE_FORMAT;
+            break;
+
+          case ProfileOperationResult::ERROR_INVALID_EMAIL:
+            $viewBag->validationErrors[EditProfileView::FIELD_NAME_EMAIL] = $strings::ERROR_EMAIL_FORMAT;
             break;
 
           default:

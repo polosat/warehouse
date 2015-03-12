@@ -1,10 +1,8 @@
 <?php
 /** @var LoginView $this */
-/** @var LoginViewBag $bag */
 $strings = $this->LoginStrings;
+/** @var LoginViewBag $bag */
 $bag = $this->Bag;
-$userName = empty($bag->userName) ? '' : $bag->userName;
-$focusedControl = empty($userName) ? LoginView::FIELD_NAME_LOGIN : LoginView::FIELD_NAME_PASSWORD;
 ?>
 <div id="login_form" class="form-frame">
   <h1><?=$strings::TITLE_LOGIN_FORM?></h1>
@@ -13,12 +11,11 @@ $focusedControl = empty($userName) ? LoginView::FIELD_NAME_LOGIN : LoginView::FI
 <?php endif ?>
   <form action="" method="post">
     <label for="login"><?=$strings::LABEL_LOGIN?></label>
-    <input id="login" name="<?=$this::FIELD_NAME_LOGIN?>" class="sign-up-input" type="text" value="<?=html($userName)?>"/>
+    <input id="login" name="<?=$this::FIELD_NAME_LOGIN?>" class="sign-up-input" type="text" value="<?=html($bag->userName)?>"/>
     <label for="password"><?=$strings::LABEL_PASSWORD?></label>
     <input id="password" name="<?=$this::FIELD_NAME_PASSWORD?>" class="sign-up-input" type="password" value=""/>
-    <p id="button_box">
+    <div id="button_line">
       <input id="submit" class="button" type="submit" value="<?=$strings::BUTTON_LOGIN?>">
-    </p>
+    </div>
   </form>
-  <script type="text/javascript">document.getElementById('<?=$focusedControl?>').focus();</script>
 </div>

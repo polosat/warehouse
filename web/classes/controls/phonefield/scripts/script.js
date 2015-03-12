@@ -30,6 +30,7 @@ function PhoneField(inputID) {
     value = value.replace(/\s+/g, ' ');
     value = value.replace(/\s\-+/g, '-');
     value = value.replace(/\-+\s/g, '-');
+    value = value.replace(/\-+/g, '-');
     value = value.replace(/^[\s\-]+/g, '');
     value = value.replace(/[\s\-]+$/g, '');
     input.value = value;

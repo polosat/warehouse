@@ -16,6 +16,7 @@ $submitName = $existingUser ? $strings::BUTTON_CHANGE : $strings::BUTTON_REGISTE
 <?php if (isset($bag->validationErrors[EditProfileView::FIELD_NAME_LOGIN])): ?>
     <div class="form-frame-error"><?=$bag->validationErrors[EditProfileView::FIELD_NAME_LOGIN]?></div>
 <?php endif ?>
+
 <?php if ($existingUser): ?>
     <label for="password_current"><?=$strings::LABEL_PASSWORD_CURRENT?><span class="red-text"> *</span></label>
     <div class="form-frame-hint"><?=$strings::HINT_PASSWORD_CURRENT?></div>
@@ -24,6 +25,7 @@ $submitName = $existingUser ? $strings::BUTTON_CHANGE : $strings::BUTTON_REGISTE
     <div class="form-frame-error"><?=$bag->validationErrors[EditProfileView::FIELD_NAME_PASSWORD_CURRENT]?></div>
 <?php endif ?>
 <?php endif ?>
+
     <label for="password"><?=$strings::LABEL_PASSWORD?><span class="red-text"> *</span></label>
     <div class="form-frame-hint"><?php echo $strings::HINT_PASSWORD; $existingUser && print '<br/>'.$strings::HINT_EMPTY_PASSWORD; ?></div>
     <input id="password" name="<?=EditProfileView::FIELD_NAME_PASSWORD?>" type="password" maxlength="<?=UserEntity::PASSWORD_MAX_LENGTH?>"/>
@@ -44,7 +46,6 @@ $submitName = $existingUser ? $strings::BUTTON_CHANGE : $strings::BUTTON_REGISTE
     <div class="form-frame-error"><?=$bag->validationErrors[EditProfileView::FIELD_NAME_FIRST_NAME]?></div>
 <?php endif ?>
 
-
     <label for="last_name"><?=$strings::LABEL_LAST_NAME?><span class="red-text"> *</span></label>
     <input id="last_name" name="<?=EditProfileView::FIELD_NAME_LAST_NAME?>" type="text" value="<?=html($user->LastName)?>"/>
 <?php if (isset($bag->validationErrors[EditProfileView::FIELD_NAME_LAST_NAME])): ?>
@@ -53,7 +54,6 @@ $submitName = $existingUser ? $strings::BUTTON_CHANGE : $strings::BUTTON_REGISTE
 
     <label for="birthday"><?=$strings::LABEL_BIRTHDAY?></label>
     <input id="birthday" name="<?=EditProfileView::FIELD_NAME_BIRTHDAY?>" type="text" value="<?=$user->Birthday?>" maxlength="10"/>
-<?php $this->birthdayPicker->Render(); ?>
 <?php if (isset($bag->validationErrors[EditProfileView::FIELD_NAME_BIRTHDAY])): ?>
     <div class="form-frame-error"><?=$bag->validationErrors[EditProfileView::FIELD_NAME_BIRTHDAY]?></div>
 <?php endif ?>
@@ -61,7 +61,6 @@ $submitName = $existingUser ? $strings::BUTTON_CHANGE : $strings::BUTTON_REGISTE
     <label for="phone"><?=$strings::LABEL_PHONE?></label>
     <div class="form-frame-hint"><?=$strings::HINT_PHONE?></div>
     <input id="phone" name="<?=EditProfileView::FIELD_NAME_PHONE?>" type="text" value="<?=html($user->Phone)?>" maxlength="32"/>
-<?php $this->phoneField->Render(); ?>
 <?php if (isset($bag->validationErrors[EditProfileView::FIELD_NAME_PHONE])): ?>
     <div class="form-frame-error"><?=$bag->validationErrors[EditProfileView::FIELD_NAME_PHONE]?></div>
 <?php endif ?>
@@ -73,11 +72,15 @@ $submitName = $existingUser ? $strings::BUTTON_CHANGE : $strings::BUTTON_REGISTE
 <?php endif ?>
     <hr/>
     <span class="form-frame-hint form-frame-remark"><span class="red-text">*</span> <?=$strings::HINT_MANDATORY?></span>
-    <p>
+    <div id="button_line">
       <input id="submit" class="button" type="submit" value="<?=$submitName?>">
 <?php if ($existingUser): ?>
       <input id="cancel" class="button" type="button" value="<?=$strings::BUTTON_CANCEL?>" onclick="navigate('<?=$bag->CancelUri?>')">
 <?php endif ?>
-    </p>
+    </div>
   </form>
 </div>
+<?php
+  $this->birthdayPicker->Render();
+  $this->phoneField->Render();
+?>

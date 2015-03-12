@@ -21,3 +21,10 @@ if(typeof String.prototype.trim !== 'function') {
     return this.replace(/^\s+|\s+$/g, '');
   }
 }
+
+function focusElementByName(name) {
+  var fields = document.getElementsByName(name);
+  if (fields.length > 0) {
+    fields[0].focus();
+  }
+}

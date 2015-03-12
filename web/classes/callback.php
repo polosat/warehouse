@@ -1,7 +1,7 @@
 <?php
 abstract class CallbackBase {
   /** @var  MessageBox */
-  public $messageBox;
+  public $alert;
   public $reason;
 
   public function __construct($reason) {

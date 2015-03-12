@@ -1,10 +1,12 @@
 body.show-message-box {
   overflow: hidden;
+  margin: 0;
+  height: 100%;
 }
 
-body.show-message-box #message-box-shadow {
+body.show-message-box .message-box-shadow {
   display: block;
-  position: fixed;
+  position: absolute;
   left: 0;
   top: 0;
   width: 100%;
@@ -13,17 +15,35 @@ body.show-message-box #message-box-shadow {
   background-image:url("/classes/controls/messagebox/img/shadow.png");
 }
 
-#message-box-shadow {
+.message-box-shadow {
   display: none;
 }
 
-#message-box {
+.message-box-shadow input {
+  width: 80px;
+  margin: 0 2px;
+}
+
+.message-box {
   z-index: 20001;
   background-color: white;
   margin: 200px auto 0;
+  outline: 0;
   text-align: center;
   padding-bottom: 20px;
   width: 500px;
+
+  -moz-box-shadow: 3px 3px 4px #808080;
+  -webkit-box-shadow: 3px 3px 4px #808080;
+  box-shadow: 3px 3px 4px #808080;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#808080')";
+  filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#808080');
+}
+
+.message-box-text {
+  padding: 20px 20px 0;
+  margin-bottom: 20px;
+  text-align: left;
 }
 
 .error-border {
@@ -32,15 +52,4 @@ body.show-message-box #message-box-shadow {
 
 .info-border {
   border-top: 10px solid #0000FF;
-}
-
-#message-box-text {
-  background-color: #fffef2;
-  padding: 20px 20px 0;
-  margin-bottom: 20px;
-  text-align: left;
-}
-
-#message_box_button {
-  width: 80px;
 }

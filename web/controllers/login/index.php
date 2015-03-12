@@ -11,7 +11,7 @@ class LoginController extends Controller {
 
     $callback = $this->GetCallback();
 
-    // Normally an authenticated and non-expired user shouldn't see the login prompt
+    // Normally an authenticated and non-expired user shouldn't see the login prompt. So go to the default page
     if (!$callback && $session->IsAuthenticated() && !$session->IsExpired()) {
       return new Request($request->language);
     }
@@ -30,20 +30,20 @@ class LoginController extends Controller {
           break;
 
         case LoginCallback::REASON_SESSION_EXPIRED:
-          $viewBag->messageBox = new MessageBox($strings::ERROR_SESSION_EXPIRED);
+          $viewBag->alert = new MessageBox($strings::ERROR_SESSION_EXPIRED);
           break;
 
         case LoginCallback::REASON_AUTHENTICATION_REQUIRED:
-          //$viewBag->messageBox = new MessageBox($strings::ERROR_AUTHENTICATION_REQUIRED);
+          //$viewBag->alert = new MessageBox($strings::ERROR_AUTHENTICATION_REQUIRED);
           break;
 
         case LoginCallback::REASON_UNKNOWN_USER_ID:
-          $viewBag->messageBox = new MessageBox($strings::ERROR_UNKNOWN_USER);
+          $viewBag->alert = new MessageBox($strings::ERROR_UNKNOWN_USER);
           break;
 
         case LoginCallback::REASON_SHOW_MESSAGE:
-          if (isset($callback->messageBox)) {
-            $viewBag->messageBox = $callback->messageBox;
+          if (isset($callback->alert)) {
+            $viewBag->alert = $callback->alert;
           }
           break;
 

@@ -24,29 +24,41 @@ class EditProfileView extends LayoutView {
   public function __construct(EditProfileViewBag $bag, $language) {
     parent::__construct($bag, $language);
     $this->ProfileStrings = EditProfileViewStrings::GetInstance($language);
+  }
 
-    $this->Bag->stylesheets[] = '/views/profile/edit/css/style.css';
+  public function BeforeLayoutRender() {
+    /** @var EditProfileViewBag $bag */
+    $bag = $this->Bag;
+    $user = $bag->User;
+    $strings = $this->ProfileStrings;
 
-    $this->Bag->stylesheets[] = '/classes/controls/datepicker/css/style.css';
-    $this->Bag->scripts[] = '/classes/controls/datepicker/scripts/script.js';
-    $this->Bag->stylesheets[] = '/classes/controls/phonefield/css/style.css';
-    $this->Bag->scripts[] = '/classes/controls/phonefield/scripts/script.js';
+    $bag->stylesheets[] = '/views/profile/edit/css/style.css';
+    $bag->stylesheets[] = '/classes/controls/datepicker/css/style.css';
+    $bag->scripts[] = '/classes/controls/datepicker/scripts/script.js';
+    $bag->stylesheets[] = '/classes/controls/phonefield/css/style.css';
+    $bag->scripts[] = '/classes/controls/phonefield/scripts/script.js';
+
+    $bag->headerTitle = isset($user->UserID) ? $strings::HEADER_TITLE_EDIT_PROFILE : $strings::HEADER_TITLE_NEW_USER;
+
     $this->birthdayPicker = new DatePicker(
       EditProfileView::FIELD_NAME_BIRTHDAY,
-      $language,
+      $strings->GetLanguage(),
       ProfileModel::GetMinAllowedBirthdayDate(),
       ProfileModel::GetMaxAllowedBirthdayDate()
     );
 
     $this->phoneField = new PhoneField(self::FIELD_NAME_PHONE);
+
+    if (count($bag->validationErrors) > 0) {
+      reset($bag->validationErrors);
+      $this->focusedElement = key($bag->validationErrors);
+    }
+    else {
+      $this->focusedElement = self::FIELD_NAME_LOGIN;
+    }
   }
 
   public function Render() {
-    /** @var EditProfileViewBag $bag */
-    $bag = $this->Bag;
-    $user = $bag->User;
-    $strings = $this->ProfileStrings;
-    $bag->headerTitle = isset($user->UserID) ? $strings::HEADER_TITLE_EDIT_PROFILE : $strings::HEADER_TITLE_NEW_USER;
     parent::Render();
   }
 

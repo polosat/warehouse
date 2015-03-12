@@ -1,26 +1,37 @@
 <?php
+require_once __DIR__ . '/strings.php';
+
 class MessageBox {
   const TYPE_ERROR  = 1;
   const TYPE_INFO   = 2;
 
-  protected $borderClass;
-  protected $text;
+  const MB_OK       = 1;
+  const MB_CANCEL   = 2;
+  const MB_YES      = 4;
+  const MB_NO       = 8;
 
-  public function __construct($text, $type = MessageBox::TYPE_ERROR) {
-    switch ($type) {
-      case MessageBox::TYPE_ERROR:
-        $this->borderClass = 'error-border';
-        break;
-      case MessageBox::TYPE_INFO:
-        $this->borderClass = 'info-border';
-        break;
-      default:
-        $this->borderClass = 'error-border';
-    }
-    $this->text = $text;
+  public $Text;
+  public $Type;
+  public $Buttons;
+
+  public function __construct($text, $type = self::TYPE_ERROR, $buttons = self::MB_OK) {
+    $this->Text = $text;
+    $this->Type = $type;
+    $this->Buttons = $buttons;
   }
 
-  public function Render() {
-    require __DIR__ . '/template.php';
+  static public function GetButtonTitles($language) {
+    /** @var MessageBoxStrings $strings */
+    $strings = MessageBoxStrings::GetInstance($language);
+
+    return json_encode(
+      array(
+        $strings::BUTTON_OK,
+        $strings::BUTTON_CANCEL,
+        $strings::BUTTON_YES,
+        $strings::BUTTON_NO
+      ),
+      JSON_UNESCAPED_UNICODE
+    );
   }
 }

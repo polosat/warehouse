@@ -9,27 +9,28 @@ body {
 
 .button {
   font: normal 13px Arial, Verdana, sans-serif;
-  background-color: #F9F9F9;
-  border-radius: 6px;
+  width: 85px;
+  line-height: 23px;
+  margin: 0 2px 0 0;
+  padding: 0;
+  border-radius: 4px;
   border: 1px solid #ACACAC;
   color: #404040;
-  padding: 4px;
-  width: 85px;
-  outline: 0;
+  background-color: #F0F0F0;
+  /*outline: 0;*/
 }
 
 .button:hover {
-  background-color: #E9E9E9;
+  background:-moz-linear-gradient( center top, #EDEDED 5%, #DFDFDF 100% );
+  background:-ms-linear-gradient( top, #EDEDED 5%, #DFDFDF 100% );
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#EDEDED', endColorstr='#DFDFDF');
+  background:-webkit-gradient(linear, left top, left bottom, color-stop(5%, #EDEDED), color-stop(100%, #DFDFDF) );
+  background-color:#EDEDED;
 }
 
 .button:active {
   position:relative;
   top:1px;
-  outline: 0;
-}
-
-.button::-moz-focus-inner {
-  border: 0;
 }
 
 /******************* Header items ******************************/

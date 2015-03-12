@@ -33,7 +33,7 @@ $birthdayFormatted = $this->FormatBirthday();
 <?php endif ?>
   </table>
   <hr/>
-  <form action="<?=$bag->EditUri?>" method="get">
-    <input type="submit" class="button" value="<?=$strings::LABEL_EDIT?>">
-  </form>
+  <div id="button_line">
+    <input type="button" class="button" onclick="navigate('<?=$bag->EditUri?>')" value="<?=$strings::LABEL_EDIT?>">
+  </div>
 </div>

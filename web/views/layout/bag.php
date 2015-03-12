@@ -12,7 +12,7 @@ abstract class LayoutViewBag {
   public $languageItems = array();
 
   /** @var  MessageBox */
-  public $messageBox;
+  public $alert;
 }
 
 class HeaderItem {

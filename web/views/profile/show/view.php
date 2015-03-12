@@ -9,11 +9,7 @@ class ShowProfileView extends LayoutView {
 
   public function __construct(ShowProfileViewBag $bag, $language) {
     parent::__construct($bag, $language);
-
     $this->ProfileStrings = ShowProfileViewStrings::GetInstance($language);
-    $strings = $this->ProfileStrings;
-    $this->Bag->headerTitle = $strings::HEADER_TITLE;
-    $this->Bag->stylesheets[] = '/views/profile/show/css/style.css';
   }
 
   protected function FormatBirthday() {
@@ -30,6 +26,15 @@ class ShowProfileView extends LayoutView {
     else {
       return null;
     }
+  }
+
+  protected function BeforeLayoutRender() {
+    /** @var ShowProfileViewBag $bag */
+    $bag = $this->Bag;
+    $strings = $this->ProfileStrings;
+
+    $bag->headerTitle = $strings::HEADER_TITLE;
+    $bag->stylesheets[] = '/views/profile/show/css/style.css';
   }
 
   protected function RenderBody() {
