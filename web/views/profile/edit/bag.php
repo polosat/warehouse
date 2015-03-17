@@ -2,6 +2,6 @@
 class EditProfileViewBag {
   /** @var UserEntity */
   public $User;
-  public $validationErrors = array();
+  public $ValidationErrors = array();
   public $CancelUri;
 }

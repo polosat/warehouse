@@ -1,6 +1,4 @@
-<?php
-/** @var $this DatePicker */
-?>
+<?php /** @var $this DatePicker */ ?>
 <script type="text/javascript">
   var birthdayPicker = new DatePicker(
     new DatePicker.Config(

@@ -45,22 +45,22 @@ class EditProfileView extends LayoutView {
     $user = $bag->User;
     $strings = $this->ProfileStrings;
 
-    $this->stylesheets[] = '/views/profile/edit/css/style.css';
+    $this->Stylesheets[] = '/views/profile/edit/css/style.css';
 
-    $this->stylesheets[] = '/classes/controls/datepicker/css/style.css';
-    $this->scripts[] = '/classes/controls/datepicker/scripts/script.js';
+    $this->Stylesheets[] = '/classes/controls/datepicker/css/style.css';
+    $this->Scripts[] = '/classes/controls/datepicker/scripts/script.js';
 
-    $this->stylesheets[] = '/classes/controls/phonefield/css/style.css';
-    $this->scripts[] = '/classes/controls/phonefield/scripts/script.js';
+    $this->Stylesheets[] = '/classes/controls/phonefield/css/style.css';
+    $this->Scripts[] = '/classes/controls/phonefield/scripts/script.js';
 
-    $this->headerTitle = isset($user->UserID) ? $strings::HEADER_TITLE_EDIT_PROFILE : $strings::HEADER_TITLE_NEW_USER;
+    $this->HeaderTitle = isset($user->UserID) ? $strings::HEADER_TITLE_EDIT_PROFILE : $strings::HEADER_TITLE_NEW_USER;
 
-    if (count($bag->validationErrors) > 0) {
-      reset($bag->validationErrors);
-      $this->focusedElement = key($bag->validationErrors);
+    if (count($bag->ValidationErrors) > 0) {
+      reset($bag->ValidationErrors);
+      $this->FocusedElement = key($bag->ValidationErrors);
     }
     else {
-      $this->focusedElement = self::FIELD_NAME_LOGIN;
+      $this->FocusedElement = self::FIELD_NAME_LOGIN;
     }
   }
 

@@ -4,8 +4,7 @@ class Session {
   const LAST_ACTIVITY = 'LAST_ACTIVITY';
   const CALLBACK      = 'CALLBACK';
 
-  /** @var Session */
-  protected static $instance;
+  static protected $instance;
   protected $expired;
   protected $userID;
 

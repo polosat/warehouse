@@ -21,9 +21,9 @@ class FilesView extends LayoutView {
   protected function BeforeLayoutRender() {
     $strings = $this->FilesStrings;
 
-    $this->messageBoxRequired = true;
-    $this->headerTitle = $strings::HEADER_TITLE;
-    $this->stylesheets[] = '/views/files/css/style.css';
+    $this->MessageBoxRequired = true;
+    $this->HeaderTitle = $strings::HEADER_TITLE;
+    $this->Stylesheets[] = '/views/files/css/style.css';
   }
 
   protected function RenderBody() {

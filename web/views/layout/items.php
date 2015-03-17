@@ -6,25 +6,25 @@ class HeaderItem {
   const LOGIN     = 0x8;
   const LOGOUT    = 0x10;
 
-  public $text;
-  public $uri;
+  public $Text;
+  public $Uri;
 
   public function __construct($text, $uri) {
-    $this->text = $text;
-    $this->uri = $uri;
+    $this->Text = $text;
+    $this->Uri = $uri;
   }
 }
 
 class LanguageItem {
-  public $code;
-  public $default;
-  public $name;
-  public $uri;
+  public $Code;
+  public $Default;
+  public $Name;
+  public $Uri;
 
   public function __construct($code, $name, $default = false, $uri = null) {
-    $this->code = $code;
-    $this->default = $default;
-    $this->name = $name;
-    $this->uri = $uri;
+    $this->Code = $code;
+    $this->Default = $default;
+    $this->Name = $name;
+    $this->Uri = $uri;
   }
 }

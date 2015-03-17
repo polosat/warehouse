@@ -18,8 +18,8 @@ abstract class Controller {
 
   public function Invoke() {
     $context = $this->context;
-    $session = $context->session;
-    $request = $context->request;
+    $session = $context->Session;
+    $request = $context->Request;
 
     $callbackRequest = null;
 
@@ -27,17 +27,17 @@ abstract class Controller {
       $callback = new LoginCallback(LoginCallback::REASON_SESSION_EXPIRED);
       $callbackRequest = $this->CreateCallbackRequest($callback, Application::LOGIN_CONTROLLER);
     }
-    else if ($this->RequiresAuthentication() && !$context->session->IsAuthenticated()) {
+    else if ($this->RequiresAuthentication() && !$context->Session->IsAuthenticated()) {
       $callback = new LoginCallback(LoginCallback::REASON_AUTHENTICATION_REQUIRED);
       $callbackRequest = $this->CreateCallbackRequest($callback, Application::LOGIN_CONTROLLER);
     }
     else {
       $methodName = 'Action';
-      if ($context->request instanceof PostRequest) {
+      if ($context->Request instanceof PostRequest) {
         $methodName .= 'Post';
       }
 
-      $actionName = empty($request->action) ? Controller::DEFAULT_ACTION : $request->action;
+      $actionName = empty($request->Action) ? Controller::DEFAULT_ACTION : $request->Action;
       $methodName .= "_$actionName";
 
       if (method_exists($this, $methodName)) {
@@ -57,14 +57,14 @@ abstract class Controller {
 
   protected function CreateCallbackRequest(CallbackBase $callback = null, $controller = null, $action = null) {
     $context = $this->context;
-    $request = $context->request;
+    $request = $context->Request;
 
     if (isset($callback)) {
       $context->PushCallback($callback);
     }
 
     $callbackRequest = new Request(
-      $request->language,
+      $request->Language,
       $controller,
       $action
     );
@@ -73,41 +73,41 @@ abstract class Controller {
   }
 
   protected function UnserializeCallback() {
-    $serializedCallback = $this->context->serializedCallback;
+    $serializedCallback = $this->context->SerializedCallback;
     return unserialize($serializedCallback);
   }
 
   protected function InitializeLayoutView(LayoutView $view) {
     $context = $this->context;
-    $request = $context->request;
+    $request = $context->Request;
     $layoutStrings = $view->LayoutStrings;
 
-    $selectedLanguage = $request->language;
-    $defaultLanguage = $context->languages[0];
+    $selectedLanguage = $request->Language;
+    $defaultLanguage = $context->Languages[0];
 
     // Get the current uri without a language prefix
     $baseUri = $request->Uri('');
-    $view->languageItems = array();
+    $view->LanguageItems = array();
 
     // Reserve a place for the selected language, it should be first
-    $view->languageItems[] = null;
-    foreach ($context->languages as $language) {
+    $view->LanguageItems[] = null;
+    foreach ($context->Languages as $language) {
       $default = ($language == $defaultLanguage);
       $languageName = $layoutStrings->GetConstant("LANGUAGE_$language");
       $uriLanguagePrefix = $default ? '' : "/$language";
 
       if ($default && empty($selectedLanguage) || $language == $selectedLanguage) {
-        $view->languageItems[0] = new LanguageItem($language, $languageName, $default);
+        $view->LanguageItems[0] = new LanguageItem($language, $languageName, $default);
       }
       else {
-        $view->languageItems[] = new LanguageItem($language, $languageName, $default, $uriLanguagePrefix . $baseUri);
+        $view->LanguageItems[] = new LanguageItem($language, $languageName, $default, $uriLanguagePrefix . $baseUri);
       }
     }
 
     // Initialize header items
     $uriLanguagePrefix = empty($selectedLanguage) ? '' : "/$selectedLanguage";
     $headerItemsMask = $this->HeaderItemsMask();
-    $view->headerItems = array();
+    $view->HeaderItems = array();
     $itemID = 1;
 
     while ($headerItemsMask) {
@@ -141,7 +141,7 @@ abstract class Controller {
           default:
             throw new LogicException('Unexpected header link.');
         }
-        $view->headerItems[] = new HeaderItem($title, $uriLanguagePrefix . $uri);
+        $view->HeaderItems[] = new HeaderItem($title, $uriLanguagePrefix . $uri);
         $headerItemsMask &= ~$itemID;
       }
       $itemID <<= 1;

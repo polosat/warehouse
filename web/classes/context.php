@@ -1,31 +1,31 @@
 <?php
 class RuntimeContext {
-  public $session;
-  public $request;
-  public $languages;
-  public $serializedCallback;
+  public $Session;
+  public $Request;
+  public $Languages;
+  public $SerializedCallback;
 
   public function __construct(Request $request, Session $session) {
     /** @var Request | PostRequest $request */
-    $this->request = $request;
-    $this->session = $session;
+    $this->Request = $request;
+    $this->Session = $session;
 
     // Read serialized callback and remove it from the session
-    $this->serializedCallback = $this->session->GetValue(Session::CALLBACK);
-    $this->session->UnsetValue(Session::CALLBACK);
+    $this->SerializedCallback = $this->Session->GetValue(Session::CALLBACK);
+    $this->Session->UnsetValue(Session::CALLBACK);
 
     // Setup languages
-    $this->languages = explode('|', Settings::LANGUAGES);
-    if ($this->languages[0] == '')
+    $this->Languages = explode('|', Settings::LANGUAGES);
+    if ($this->Languages[0] == '')
       throw new LogicException('Languages have not been set.');
 
-    if (!in_array($this->request->language, $this->languages)) {
-      $this->request->language = '';
+    if (!in_array($this->Request->Language, $this->Languages)) {
+      $this->Request->Language = '';
     }
   }
 
   public function PushCallback($callback) {
     $serializedCallback = serialize($callback);
-    $this->session->SetValue(Session::CALLBACK, $serializedCallback);
+    $this->Session->SetValue(Session::CALLBACK, $serializedCallback);
   }
 }

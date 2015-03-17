@@ -9,17 +9,17 @@ abstract class LayoutView {
 
   public $LayoutStrings;
 
-  public $stylesheets;
-  public $scripts;
+  public $Stylesheets;
+  public $Scripts;
 
-  public $headerTitle;
-  public $headerItems;
-  public $languageItems = array();
+  public $HeaderTitle;
+  public $HeaderItems;
+  public $LanguageItems = array();
 
-  public $alert;
-  public $messageBoxRequired = false;
+  public $Alert;
+  public $MessageBoxRequired = false;
 
-  public $focusedElement;
+  public $FocusedElement;
 
   protected function __construct($language) {
     /** @var LayoutViewStrings  $strings */
@@ -32,27 +32,27 @@ abstract class LayoutView {
     $languageItems = array();
     $alert = null;
 
-    $this->headerItems = $headerItems;
-    $this->languageItems = $languageItems;
+    $this->HeaderItems = $headerItems;
+    $this->LanguageItems = $languageItems;
     $this->LayoutStrings = $strings;
-    $this->stylesheets = array();
-    $this->scripts = array();
-    $this->headerTitle = '';
-    $this->alert = $alert;
+    $this->Stylesheets = array();
+    $this->Scripts = array();
+    $this->HeaderTitle = '';
+    $this->Alert = $alert;
   }
 
   public function Render() {
     $this->BeforeLayoutRender();
 
-    $this->scripts[] = '/views/layout/scripts/main.js';
-    $this->stylesheets[] = '/views/layout/css/main.css';
-    $this->stylesheets[] = '/views/layout/css/drop-menu.css';
+    $this->Scripts[] = '/views/layout/scripts/main.js';
+    $this->Stylesheets[] = '/views/layout/css/main.css';
+    $this->Stylesheets[] = '/views/layout/css/drop-menu.css';
 
-    $this->messageBoxRequired = $this->messageBoxRequired || isset($this->alert);
+    $this->MessageBoxRequired = $this->MessageBoxRequired || isset($this->Alert);
 
-    if ($this->messageBoxRequired) {
-      $this->stylesheets[] = '/classes/controls/messagebox/css/style.css';
-      $this->scripts[] = '/classes/controls/messagebox/scripts/script.js';
+    if ($this->MessageBoxRequired) {
+      $this->Stylesheets[] = '/classes/controls/messagebox/css/style.css';
+      $this->Scripts[] = '/classes/controls/messagebox/scripts/script.js';
     }
 
     require 'template.php';

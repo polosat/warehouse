@@ -33,8 +33,8 @@ class ShowProfileView extends LayoutView {
   protected function BeforeLayoutRender() {
     $strings = $this->ProfileStrings;
 
-    $this->headerTitle = $strings::HEADER_TITLE;
-    $this->stylesheets[] = '/views/profile/show/css/style.css';
+    $this->HeaderTitle = $strings::HEADER_TITLE;
+    $this->Stylesheets[] = '/views/profile/show/css/style.css';
   }
 
   protected function RenderBody() {

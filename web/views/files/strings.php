@@ -9,7 +9,7 @@ class FilesViewStrings extends Strings {
   const HINT_NOTHING_DELETE   = 'You haven\'t selected anything';
   const HINT_LIMIT_REACHED    = 'You can\'t upload more files as you\'ve reached the storage capacity limit.';
 
-  const ALERT_DELETE_FILE     = 'Are you sure you want to delete ';
+  const ALERT_DELETE_FILE     = 'Are you sure you want to delete \\\'%s\\\'?';
   const ALERT_DELETE_FILES    = 'Are you sure you want to delete selected files?';
 
   const COLUMN_NAME           = 'File name';
@@ -27,7 +27,7 @@ class FilesViewStrings_RU extends FilesViewStrings {
   const HINT_NOTHING_DELETE   = 'You haven\'t selected anything';
   const HINT_LIMIT_REACHED    = 'You can\'t upload more files as you\'ve reached the storage capacity limit.';
 
-  const ALERT_DELETE_FILE     = 'Are you sure you want to delete \'%s\'?';
+  const ALERT_DELETE_FILE     = 'Are you sure you want to delete \\\'%s\\\'?';
   const ALERT_DELETE_FILES    = 'Are you sure you want to delete selected files?';
 
   const COLUMN_NAME           = 'Имя файла';

@@ -6,31 +6,31 @@ require_once __DIR__ . '/callback.php';
 class LoginController extends Controller {
   protected function Action_Index() {
     $context = $this->context;
-    $request = $context->request;
-    $session = $context->session;
+    $request = $context->Request;
+    $session = $context->Session;
 
     $callback = $this->GetCallback();
 
     // Normally an authenticated and non-expired user shouldn't see the login prompt. So go to the default page
     if (!$callback && $session->IsAuthenticated() && !$session->IsExpired()) {
-      return new Request($request->language);
+      return new Request($request->Language);
     }
 
     $bag = new LoginViewBag();
-    $view = new LoginView($bag, $request->language);
+    $view = new LoginView($bag, $request->Language);
     $this->InitializeLayoutView($view);
 
     $strings = $view->LoginStrings;
 
     if (isset($callback)) {
-      switch ($callback->reason) {
+      switch ($callback->Reason) {
         case LoginCallback::REASON_AUTHENTICATION_FAILED:
-          $bag->errorText = $strings::ERROR_AUTHENTICATION_FAILED;
-          $bag->userName = $callback->UserName;
+          $bag->ErrorText = $strings::ERROR_AUTHENTICATION_FAILED;
+          $bag->UserName = $callback->UserName;
           break;
 
         case LoginCallback::REASON_SESSION_EXPIRED:
-          $view->alert = new MessageBox($strings::ERROR_SESSION_EXPIRED);
+          $view->Alert = new MessageBox($strings::ERROR_SESSION_EXPIRED);
           break;
 
         case LoginCallback::REASON_AUTHENTICATION_REQUIRED:
@@ -38,12 +38,12 @@ class LoginController extends Controller {
           break;
 
         case LoginCallback::REASON_UNKNOWN_USER_ID:
-          $view->alert = new MessageBox($strings::ERROR_UNKNOWN_USER);
+          $view->Alert = new MessageBox($strings::ERROR_UNKNOWN_USER);
           break;
 
         case LoginCallback::REASON_SHOW_MESSAGE:
-          if (isset($callback->alert)) {
-            $view->alert = $callback->alert;
+          if (isset($callback->Alert)) {
+            $view->Alert = $callback->Alert;
           }
           break;
 
@@ -59,8 +59,8 @@ class LoginController extends Controller {
 
   protected function ActionPost_Index() {
     $context = $this->context;
-    $session = $context->session;
-    $request = $context->request;
+    $session = $context->Session;
+    $request = $context->Request;
 
     $login = $request->GetPostedValue(LoginView::FIELD_NAME_LOGIN);
     $password = $request->GetPostedValue(LoginView::FIELD_NAME_PASSWORD);
@@ -82,7 +82,7 @@ class LoginController extends Controller {
   }
 
   protected function Action_Logout() {
-    $this->context->session->Destroy();
+    $this->context->Session->Destroy();
     return new Request('', Application::LOGIN_CONTROLLER);
   }
 
@@ -92,7 +92,7 @@ class LoginController extends Controller {
   }
 
   protected function HeaderItemsMask() {
-    return $this->context->session->IsAuthenticated() ?
+    return $this->context->Session->IsAuthenticated() ?
       HeaderItem::FILES | HeaderItem::PROFILE | HeaderItem::LOGOUT :
       HeaderItem::NEW_USER;
   }

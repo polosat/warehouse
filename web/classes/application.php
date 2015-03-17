@@ -51,14 +51,14 @@ class Application {
       }
     }
     catch (InvalidRequestException $e) {
-      $language = isset($context) ? $context->request->language : '';
+      $language = isset($context) ? $context->Request->Language : '';
       $this->Show404($language);
     }
   }
 
   protected function CreateController(RuntimeContext $context) {
-    $request = $context->request;
-    $name = empty($request->controller) ? Application::DEFAULT_CONTROLLER : $request->controller;
+    $request = $context->Request;
+    $name = empty($request->Controller) ? Application::DEFAULT_CONTROLLER : $request->Controller;
 
     switch ($name) {
       case 'login':

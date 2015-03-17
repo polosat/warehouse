@@ -3,18 +3,18 @@ require_once __DIR__ . '/exceptions.php';
 require_once __DIR__ . '/callback.php';
 
 class Request {
-  public $controller;
-  public $action;
-  public $argument;
-  public $language;
-  public $error;
+  public $Controller;
+  public $Action;
+  public $Argument;
+  public $Language;
+  public $Error;
 
   public function __construct($language = '', $controller = null, $action = null, $argument = null) {
-    $this->language = $language;
-    $this->controller = $controller;
-    $this->action = $action;
-    $this->argument = $argument;
-    $this->error = '';
+    $this->Language = $language;
+    $this->Controller = $controller;
+    $this->Action = $action;
+    $this->Argument = $argument;
+    $this->Error = '';
   }
 
   public static function Parse() {
@@ -33,26 +33,26 @@ class Request {
     $language = isset($_GET['language']) ? $_GET['language'] : '';
     $controller = isset($_GET['controller']) ? $_GET['controller'] : '';
     $action = isset($_GET['action']) ? $_GET['action'] : '';
-    $request->error = isset($_GET['error']) && ctype_digit($_GET['error']) ? $_GET['error'] : '';
-    $request->argument = isset($_GET['argument']) ? $_GET['argument'] : '';
+    $request->Error = isset($_GET['error']) && ctype_digit($_GET['error']) ? $_GET['error'] : '';
+    $request->Argument = isset($_GET['argument']) ? $_GET['argument'] : '';
 
     // Check if the http server couldn't parse the uri
-    if ($request->error == '404')
+    if ($request->Error == '404')
       throw new InvalidRequestException();
 
-    $request->language = trim(mb_strtolower($language));
-    $request->controller = trim(mb_strtolower($controller));
-    $request->action = trim(mb_strtolower($action));
+    $request->Language = trim(mb_strtolower($language));
+    $request->Controller = trim(mb_strtolower($controller));
+    $request->Action = trim(mb_strtolower($action));
 
     // Syntax validation
-    if ($request->language && (mb_strlen($request->language) != 2 || !self::IsValidName($request->language))) {
-      $request->language = '';
+    if ($request->Language && (mb_strlen($request->Language) != 2 || !self::IsValidName($request->Language))) {
+      $request->Language = '';
     }
 
-    if ($request->controller && !self::IsValidName($request->controller))
+    if ($request->Controller && !self::IsValidName($request->Controller))
       throw new InvalidRequestException();
 
-    if ($request->action && !self::IsValidName($request->action))
+    if ($request->Action && !self::IsValidName($request->Action))
       throw new InvalidRequestException();
 
     return $request;
@@ -60,11 +60,11 @@ class Request {
 
   public function Uri($language = null) {
     if (is_null($language)) {
-      $language = $this->language;
+      $language = $this->Language;
     }
 
     $uri = null;
-    $items = array($language, $this->controller, $this->action, urlencode($this->argument));
+    $items = array($language, $this->Controller, $this->Action, urlencode($this->Argument));
     foreach ($items as $item) {
       if ($item) {
         $uri .= "/$item";

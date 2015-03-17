@@ -1,13 +1,13 @@
 <?php
 abstract class CallbackBase {
-  public $alert;
-  public $reason;
+  public $Alert;
+  public $Reason;
 
   public function __construct($reason) {
     /** @var  MessageBox $alert */
     $alert = null;
 
-    $this->reason = $reason;
-    $this->alert = $alert;
+    $this->Reason = $reason;
+    $this->Alert = $alert;
   }
 }

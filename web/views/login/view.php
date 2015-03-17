@@ -23,9 +23,9 @@ class LoginView extends LayoutView {
     $bag = $this->Bag;
     $strings = $this->LoginStrings;
 
-    $this->headerTitle = $strings::HEADER_TITLE;
-    $this->stylesheets[] = '/views/login/css/style.css';
-    $this->focusedElement = empty($bag->userName) ? LoginView::FIELD_NAME_LOGIN : LoginView::FIELD_NAME_PASSWORD;
+    $this->HeaderTitle = $strings::HEADER_TITLE;
+    $this->Stylesheets[] = '/views/login/css/style.css';
+    $this->FocusedElement = empty($bag->UserName) ? LoginView::FIELD_NAME_LOGIN : LoginView::FIELD_NAME_PASSWORD;
   }
 
   protected function RenderBody() {

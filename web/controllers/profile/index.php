@@ -10,20 +10,20 @@ class ProfileController extends Controller {
 
   protected function Action_Index() {
     $context = $this->context;
-    $request = $context->request;
-    $session = $context->session;
+    $request = $context->Request;
+    $session = $context->Session;
 
     $bag = new ShowProfileViewBag();
-    $view = new ShowProfileView($bag, $request->language);
+    $view = new ShowProfileView($bag, $request->Language);
     $this->InitializeLayoutView($view);
-    $bag->EditUri = Request::CreateUri($request->language, Application::PROFILE_CONTROLLER, self::ACTION_EDIT);
+    $bag->EditUri = Request::CreateUri($request->Language, Application::PROFILE_CONTROLLER, self::ACTION_EDIT);
     $strings = $view->ProfileStrings;
 
     $callback = $this->UnserializeCallback();
 
     if ($callback instanceof ShowProfileCallback) {
-      if ($callback->reason == ShowProfileCallback::REASON_PROFILE_CHANGED) {
-        $view->alert = new MessageBox($strings::MESSAGE_PROFILE_CHANGED, MessageBox::TYPE_INFO);
+      if ($callback->Reason == ShowProfileCallback::REASON_PROFILE_CHANGED) {
+        $view->Alert = new MessageBox($strings::MESSAGE_PROFILE_CHANGED, MessageBox::TYPE_INFO);
       }
       else {
         throw new LogicException('Unexpected redirect reason.');
@@ -46,23 +46,23 @@ class ProfileController extends Controller {
 
   protected function Action_Edit() {
     $context = $this->context;
-    $request = $context->request;
-    $session = $context->session;
+    $request = $context->Request;
+    $session = $context->Session;
 
     $bag = new EditProfileViewBag();
-    $view = new EditProfileView($bag, $request->language);
+    $view = new EditProfileView($bag, $request->Language);
     $this->InitializeLayoutView($view);
-    $bag->CancelUri = Request::CreateUri($request->language, Application::PROFILE_CONTROLLER);
+    $bag->CancelUri = Request::CreateUri($request->Language, Application::PROFILE_CONTROLLER);
     $strings = $view->ProfileStrings;
 
     $callback = $this->UnserializeCallback();
 
     if ($callback instanceof EditProfileCallback) {
-      if ($callback->reason != EditProfileCallback::REASON_VALIDATION_ERROR)
+      if ($callback->Reason != EditProfileCallback::REASON_VALIDATION_ERROR)
         throw new LogicException('Unexpected redirect reason.');
 
       if (isset($callback->OperationResult->Errors[ProfileOperationResult::ERROR_DUPLICATED_RECORD])) {
-        $view->alert = new MessageBox($strings::ERROR_NOT_CHANGED);
+        $view->Alert = new MessageBox($strings::ERROR_NOT_CHANGED);
       }
       else {
         $this->PopulateValidationErrors($view, $callback->OperationResult);
@@ -90,7 +90,7 @@ class ProfileController extends Controller {
   // Update an existing user profile
   protected function ActionPost_Edit() {
     $context = $this->context;
-    $session = $context->session;
+    $session = $context->Session;
 
     $changeRequest = $this->ParseProfileForm();
     $changeRequest->User->UserID = $session->UserID();
@@ -117,19 +117,19 @@ class ProfileController extends Controller {
   // Show create new user form
   protected function Action_New() {
     $context = $this->context;
-    $request = $context->request;
-    $session = $context->session;
+    $request = $context->Request;
+    $session = $context->Session;
 
     $bag = new EditProfileViewBag();
     $bag->User = new UserEntity();
-    $view = new EditProfileView($bag, $request->language);
+    $view = new EditProfileView($bag, $request->Language);
     $this->InitializeLayoutView($view);
-    $bag->CancelUri = Request::CreateUri($request->language, Application::PROFILE_CONTROLLER);
+    $bag->CancelUri = Request::CreateUri($request->Language, Application::PROFILE_CONTROLLER);
 
     $callback = $this->UnserializeCallback();
 
     if ($callback instanceof EditProfileCallback) {
-      if ($callback->reason != EditProfileCallback::REASON_VALIDATION_ERROR)
+      if ($callback->Reason != EditProfileCallback::REASON_VALIDATION_ERROR)
         throw new LogicException('Unexpected redirect reason.');
 
       $this->PopulateValidationErrors($view, $callback->OperationResult);
@@ -137,7 +137,7 @@ class ProfileController extends Controller {
     }
     else if ($session->IsAuthenticated()) {
       // An authenticated user shouldn't be able to see this page
-      return new Request($request->language);
+      return new Request($request->Language);
     }
 
     $view->Render();
@@ -146,14 +146,14 @@ class ProfileController extends Controller {
 
   protected function ActionPost_New() {
     $context = $this->context;
-    $request = $context->request;
-    $session = $context->session;
+    $request = $context->Request;
+    $session = $context->Session;
     /** @var EditProfileViewStrings $strings */
-    $strings = EditProfileViewStrings::GetInstance($request->language);
+    $strings = EditProfileViewStrings::GetInstance($request->Language);
 
     if ($session->IsAuthenticated()) {
       // An authenticated user shouldn't be able creating new profiles
-      return new Request($request->language);
+      return new Request($request->Language);
     }
 
     $changeRequest = $this->ParseProfileForm();
@@ -163,7 +163,7 @@ class ProfileController extends Controller {
 
     if ($operationResult->Succeeded()) {
       $callback = new LoginCallback(LoginCallback::REASON_SHOW_MESSAGE);
-      $callback->alert = new MessageBox($strings::MESSAGE_NEW_OK, MessageBox::TYPE_INFO);
+      $callback->Alert = new MessageBox($strings::MESSAGE_NEW_OK, MessageBox::TYPE_INFO);
       return $this->CreateCallbackRequest($callback, Application::LOGIN_CONTROLLER);
     }
 
@@ -174,7 +174,7 @@ class ProfileController extends Controller {
   }
 
   protected function ParseProfileForm() {
-    $request = $this->context->request;
+    $request = $this->context->Request;
     $user = new UserEntity();
     $user->FirstName = $request->GetPostedValue(EditProfileView::FIELD_NAME_FIRST_NAME);
     $user->LastName = $request->GetPostedValue(EditProfileView::FIELD_NAME_LAST_NAME);
@@ -196,49 +196,49 @@ class ProfileController extends Controller {
     $strings = $view->ProfileStrings;
 
     if (isset($operationResult->Errors[ProfileOperationResult::ERROR_DUPLICATED_RECORD])) {
-      $view->alert = new MessageBox($strings::ERROR_NOT_CHANGED);
+      $view->Alert = new MessageBox($strings::ERROR_NOT_CHANGED);
     }
     else {
       foreach ($operationResult->Errors as $error) {
         switch ($error) {
           case ProfileOperationResult::ERROR_INVALID_LOGIN:
-            $bag->validationErrors[EditProfileView::FIELD_NAME_LOGIN] = $strings::ERROR_LOGIN;
+            $bag->ValidationErrors[EditProfileView::FIELD_NAME_LOGIN] = $strings::ERROR_LOGIN;
             break;
 
           case ProfileOperationResult::ERROR_LOGIN_ALREADY_EXISTS:
-            $bag->validationErrors[EditProfileView::FIELD_NAME_LOGIN] = $strings::ERROR_LOGIN_EXISTS;
+            $bag->ValidationErrors[EditProfileView::FIELD_NAME_LOGIN] = $strings::ERROR_LOGIN_EXISTS;
             break;
 
           case ProfileOperationResult::ERROR_BAD_CURRENT_PASSWORD:
-            $bag->validationErrors[EditProfileView::FIELD_NAME_PASSWORD_CURRENT] = $strings::ERROR_NOT_AUTHENTICATED;
+            $bag->ValidationErrors[EditProfileView::FIELD_NAME_PASSWORD_CURRENT] = $strings::ERROR_NOT_AUTHENTICATED;
             break;
 
           case ProfileOperationResult::ERROR_INVALID_PASSWORD:
-            $bag->validationErrors[EditProfileView::FIELD_NAME_PASSWORD] = $strings::ERROR_PASSWORD_PATTERN;
+            $bag->ValidationErrors[EditProfileView::FIELD_NAME_PASSWORD] = $strings::ERROR_PASSWORD_PATTERN;
             break;
 
           case ProfileOperationResult::ERROR_PASSWORDS_MISMATCH:
-            $bag->validationErrors[EditProfileView::FIELD_NAME_PASSWORD_CONFIRM] = $strings::ERROR_PASSWORD_CONFIRM;
+            $bag->ValidationErrors[EditProfileView::FIELD_NAME_PASSWORD_CONFIRM] = $strings::ERROR_PASSWORD_CONFIRM;
             break;
 
           case ProfileOperationResult::ERROR_INVALID_FIRST_NAME:
-            $bag->validationErrors[EditProfileView::FIELD_NAME_FIRST_NAME] = $strings::ERROR_FIRST_NAME;
+            $bag->ValidationErrors[EditProfileView::FIELD_NAME_FIRST_NAME] = $strings::ERROR_FIRST_NAME;
             break;
 
           case ProfileOperationResult::ERROR_INVALID_LAST_NAME:
-            $bag->validationErrors[EditProfileView::FIELD_NAME_LAST_NAME] = $strings::ERROR_LAST_NAME;
+            $bag->ValidationErrors[EditProfileView::FIELD_NAME_LAST_NAME] = $strings::ERROR_LAST_NAME;
             break;
 
           case ProfileOperationResult::ERROR_INVALID_BIRTHDAY:
-            $bag->validationErrors[EditProfileView::FIELD_NAME_BIRTHDAY] = $strings::ERROR_BIRTHDAY;
+            $bag->ValidationErrors[EditProfileView::FIELD_NAME_BIRTHDAY] = $strings::ERROR_BIRTHDAY;
             break;
 
           case ProfileOperationResult::ERROR_INVALID_PHONE:
-            $bag->validationErrors[EditProfileView::FIELD_NAME_PHONE] = $strings::ERROR_PHONE_FORMAT;
+            $bag->ValidationErrors[EditProfileView::FIELD_NAME_PHONE] = $strings::ERROR_PHONE_FORMAT;
             break;
 
           case ProfileOperationResult::ERROR_INVALID_EMAIL:
-            $bag->validationErrors[EditProfileView::FIELD_NAME_EMAIL] = $strings::ERROR_EMAIL_FORMAT;
+            $bag->ValidationErrors[EditProfileView::FIELD_NAME_EMAIL] = $strings::ERROR_EMAIL_FORMAT;
             break;
 
           default:
@@ -249,19 +249,19 @@ class ProfileController extends Controller {
   }
 
   protected function HeaderItemsMask() {
-    return $this->context->session->IsAuthenticated() ?
+    return $this->context->Session->IsAuthenticated() ?
       HeaderItem::FILES | HeaderItem::LOGOUT :
       HeaderItem::LOGIN;
   }
 
   protected function RequiresAuthentication()
   {
-    return $this->context->request->action != 'new';
+    return $this->context->Request->Action != 'new';
   }
 
   protected function AllowsExpiredSession()
   {
-    return $this->context->request->action == 'new';
+    return $this->context->Request->Action == 'new';
   }
 }
 

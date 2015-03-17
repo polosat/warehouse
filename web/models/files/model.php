@@ -14,9 +14,6 @@ class FilesModel extends Model {
   const ERROR_CANT_DELETE_FILE      = 1007;
   const ERROR_SERVER_FAILURE        = 1008;
 
-  // TODO: Move this to settings (and context?) (along with max allowed file size)
-  const MAX_FILES_PER_USER          = 20;
-
   public function GetUserFiles($userID) {
     $dbh = $this->dbh();
 
@@ -128,7 +125,7 @@ class FilesModel extends Model {
       $sth->bindValue(':FileName', $request->FileName);
       $sth->bindValue(':Size', $fileSize, PDO::PARAM_INT);
       $sth->bindValue(':ContentType', $request->ContentType);
-      $sth->bindValue(':MaxFilesPerUser', self::MAX_FILES_PER_USER, PDO::PARAM_INT);
+      $sth->bindValue(':MaxFilesPerUser', Settings::MAX_FILES_PER_USER, PDO::PARAM_INT);
 
       $dbh->beginTransaction();
       $sth->execute();

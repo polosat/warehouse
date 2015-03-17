@@ -1,5 +1,5 @@
 <?php
 class LoginViewBag {
-  public $userName;
-  public $errorText;
+  public $UserName;
+  public $ErrorText;
 }

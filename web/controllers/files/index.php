@@ -11,8 +11,8 @@ class FilesController extends Controller {
 
   protected function Action_Index() {
     $context = $this->context;
-    $session = $context->session;
-    $request = $context->request;
+    $session = $context->Session;
+    $request = $context->Request;
 
     $userID = $session->UserID();
     $bag = new FilesViewBag();
@@ -32,7 +32,7 @@ class FilesController extends Controller {
       $bag->Files[] = $item;
     }
 
-    $view = new FilesView($bag, $request->language);
+    $view = new FilesView($bag, $request->Language);
     $this->InitializeLayoutView($view);
     $view->Render();
   }
@@ -40,11 +40,11 @@ class FilesController extends Controller {
   protected function Action_Get() {
     // TODO: Check userID here as well. Should we perform this checking at the model level?
     $context = $this->context;
-    $session = $context->session;
-    $request = $context->request;
+    $session = $context->Session;
+    $request = $context->Request;
 
-    if ($request->argument) {
-      $a = explode('/', $request->argument);
+    if ($request->Argument) {
+      $a = explode('/', $request->Argument);
       $userID = $session->UserID();
       $fileID = $a[0];
       //$fileName = $a[1];
@@ -56,7 +56,7 @@ class FilesController extends Controller {
 
       // TODO Verify file name as well as fileID
       $model = new FilesModel($context);
-      $file = $model->GetFile($request->argument);
+      $file = $model->GetFile($request->Argument);
       if ($file->UserID != $userID) {
         // show message box "The file does not exists";
         return null;
@@ -79,11 +79,11 @@ class FilesController extends Controller {
   // TODO: rename to 'new'
   protected function ActionPost_Index() {
     $context = $this->context;
-    $session = $context->session;
-    $request = $context->request;
+    $session = $context->Session;
+    $request = $context->Request;
     $files = $request->Files;
 
-    if ($request->error == 413) {
+    if ($request->Error == 413) {
       // show message box "The file size exceeds the limit allowed"
       return null;
     }
@@ -135,7 +135,7 @@ class FilesController extends Controller {
     $saveRequest->UploadedPath = $file->Path;
     $result = $model->SaveFile($saveRequest);
 
-    return new Request($request->language, Application::DEFAULT_CONTROLLER, 'Index');
+    return new Request($request->Language, Application::DEFAULT_CONTROLLER, 'Index');
   }
 
   protected function GetTimestamp($dateTimeString) {
