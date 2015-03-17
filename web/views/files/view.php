@@ -26,10 +26,8 @@ class FilesView extends LayoutView {
     require 'template.php';
   }
 
-  //TODO: Move to settings
-  const MB = 1048576;
   protected function FormatSize($bytes) {
-    $strings = $this->FilesStrings;
+    $strings = $this->LayoutStrings;
     return $bytes < 1024 ? $bytes : (ceil($bytes / 1024) . ' ' . $strings::UNIT_KILOBYTES);
   }
 }

@@ -17,13 +17,6 @@ class FilesModel extends Model {
   // TODO: Move this to settings (and context?) (along with max allowed file size)
   const MAX_FILES_PER_USER          = 20;
 
-  protected $storagePath;
-
-  public function __construct(ModelContext $context) {
-    parent::__construct($context);
-    $this->storagePath = $context->StoragePath;
-  }
-
   public function GetUserFiles($userID) {
     $dbh = $this->dbh();
 
@@ -70,7 +63,7 @@ class FilesModel extends Model {
       if (!is_int($fileID))
         throw new LogicException('A fileID must be an integer.');
 
-      $filePath = $this->storagePath . "$fileID.$userID";
+      $filePath = Settings::STORAGE_PATH . "$fileID.$userID";
       if (@unlink($filePath) || !file_exists($filePath)) {
         $deleted[] = $fileID;
       }
@@ -116,7 +109,7 @@ class FilesModel extends Model {
     }
 
     $fileSize = filesize($request->UploadedPath);
-    if ($fileSize > FileEntity::MAX_FILE_SIZE) {
+    if ($fileSize > Settings::MAX_FILE_SIZE) {
       return self::ERROR_FILE_SIZE_TOO_BIG;
     }
 
@@ -146,7 +139,7 @@ class FilesModel extends Model {
       }
 
       $fileID = $this->dbh()->lastInsertId();
-      $permanentPath = $this->storagePath . "$fileID.$request->UserID";
+      $permanentPath = Settings::STORAGE_PATH . "$fileID.$request->UserID";
       if (!@move_uploaded_file($request->UploadedPath, $permanentPath)) {
         $dbh->rollBack();
         return self::ERROR_SERVER_FAILURE;

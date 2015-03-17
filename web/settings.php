@@ -9,6 +9,7 @@ class Settings {
   const DB_PASSWORD = 'SecureP@ssw0rd';
   const DB_CHARSET  = 'utf8';
 
+  // TODO: We should investigate here: what does mean 1M in nginx and php configuration files, and do the same in the code
   const STORAGE_PATH        = '/Users/polosat/Code/bitbucket/smalltools/tallinn/warehouse/';
   const STORAGE_URI         = '/warehouse/';
   const BYTES_1MB           = 1048576;

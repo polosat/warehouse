@@ -24,5 +24,5 @@ class LoginViewStrings_RU extends LoginViewStrings {
   const ERROR_AUTHENTICATION_FAILED   = 'Неверное имя пользователя или пароль.';
   const ERROR_AUTHENTICATION_REQUIRED = 'Для продолжения работы необходимо ввести имя пользователя и пароль.';
   const ERROR_SESSION_EXPIRED         = 'Вы были отключены по причине длительного времени бездействия.<br />Для возобновления работы введите ваше имя пользователя и пароль.';
-  const ERROR_UNKNOWN_USER            = 'The user does not exist.';
+  const ERROR_UNKNOWN_USER            = 'Пользователь не найден.';
 }

@@ -7,10 +7,10 @@ class Model {
   private $user;
   private $password;
 
-  public function __construct(ModelContext $context) {
-    $this->dsn = $context->Dsn;
-    $this->user = $context->DbUser;
-    $this->password = $context->DbPassword;
+  public function __construct() {
+    $this->dsn = 'mysql:host='. Settings::DB_HOST . ';dbname='. Settings::DB_NAME . ';charset=' . Settings::DB_CHARSET;
+    $this->user = Settings::DB_USER;
+    $this->password = Settings::DB_PASSWORD;
   }
 
   protected function dbh() {

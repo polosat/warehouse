@@ -8,8 +8,6 @@ class ShowProfileViewStrings extends Strings {
   const LABEL_BIRTHDAY            = 'Birthday';
   const LABEL_EDIT                = 'Edit';
 
-  const VALUE_NOT_SPECIFIED       = 'Not specified';
-
   const MESSAGE_PROFILE_CHANGED   = 'Your personal data were successfully changed.';
 }
 
@@ -21,8 +19,6 @@ class ShowProfileViewStrings_RU extends ShowProfileViewStrings {
   const LABEL_PHONE               = 'Телефон';
   const LABEL_BIRTHDAY            = 'Дата рождения';
   const LABEL_EDIT                = 'Изменить';
-
-  const VALUE_NOT_SPECIFIED       = 'Не заполнено';
 
   const MESSAGE_PROFILE_CHANGED   = 'Ваши личные данные были успешно изменены.';
 }

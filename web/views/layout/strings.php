@@ -12,6 +12,11 @@ class LayoutViewStrings extends Strings {
   const HEADER_ITEM_NEW_USER  = 'sign up';
   const HEADER_ITEM_LOGIN     = 'login';
   const HEADER_ITEM_LOGOUT    = 'logout';
+
+  const TIME_FORMAT_H24       = 0;
+  const UNIT_KILOBYTES        = 'KB';
+  const UNIT_MEGABYTES        = 'MB';
+  const DECIMAL_POINT         = '.';
 }
 
 class LayoutViewStrings_RU extends LayoutViewStrings {
@@ -20,4 +25,9 @@ class LayoutViewStrings_RU extends LayoutViewStrings {
   const HEADER_ITEM_NEW_USER  = 'регистрация';
   const HEADER_ITEM_LOGIN     = 'вход';
   const HEADER_ITEM_LOGOUT    = 'выход';
+
+  const TIME_FORMAT_H24       = 1;
+  const UNIT_KILOBYTES        = 'КБ';
+  const UNIT_MEGABYTES        = 'МБ';
+  const DECIMAL_POINT         = ',';
 }
