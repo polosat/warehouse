@@ -24,6 +24,7 @@ class Model {
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
           )
         );
+        $this->dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
       }
       catch (PDOException $e) {
         // We use exception chaining here to prevent possible duplicated calls to $this->dbh()

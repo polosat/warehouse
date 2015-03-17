@@ -2,8 +2,8 @@
 require_once __DIR__ . '/strings.php';
 
 class MessageBox {
+  const TYPE_INFO   = 0;
   const TYPE_ERROR  = 1;
-  const TYPE_INFO   = 2;
 
   const MB_OK       = 1;
   const MB_CANCEL   = 2;

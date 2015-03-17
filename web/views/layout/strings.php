@@ -7,8 +7,8 @@ class LayoutViewStrings extends Strings {
   const LANGUAGE_DE           = 'Deutsch';
   const LANGUAGE_FR           = 'Français';
 
-  const HEADER_ITEM_FILES     = 'file storage';
-  const HEADER_ITEM_PROFILE   = 'user profile';
+  const HEADER_ITEM_FILES     = 'files';
+  const HEADER_ITEM_PROFILE   = 'profile';
   const HEADER_ITEM_NEW_USER  = 'sign up';
   const HEADER_ITEM_LOGIN     = 'login';
   const HEADER_ITEM_LOGOUT    = 'logout';

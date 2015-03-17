@@ -10,10 +10,12 @@ class FilesModel extends Model {
   const ERROR_FILE_NAME_EMPTY       = 1003;
   const ERROR_FILE_DOES_NOT_EXISTS  = 1004;
   const ERROR_USER_DOES_NOT_EXISTS  = 1005;
-  const ERROR_FILE_LIMIT_EXCEEDED   = 1006;
-  const ERROR_SERVER_FAILURE        = 1007;
+  const ERROR_FILES_LIMIT_EXCEEDED  = 1006;
+  const ERROR_CANT_DELETE_FILE      = 1007;
+  const ERROR_SERVER_FAILURE        = 1008;
 
-  const MAX_FILES_PER_USER  = 20;
+  // TODO: Move this to settings (and context?) (along with max allowed file size)
+  const MAX_FILES_PER_USER          = 20;
 
   protected $storagePath;
 
@@ -23,10 +25,25 @@ class FilesModel extends Model {
   }
 
   public function GetUserFiles($userID) {
+    $dbh = $this->dbh();
 
+    try {
+      $sth = $dbh->prepare(self::QUERY_SELECT_USER_FILES);
+      $sth->bindValue(':UserID', $userID, PDO::PARAM_INT);
+      $sth->setFetchMode(PDO::FETCH_CLASS, 'FileEntity');
+      $sth->execute();
+      $files = $sth->fetchAll();
+    }
+    catch(PDOException $e) {
+      throw new DatabaseException($e);
+    }
+
+    /** @var FileEntity[] $files */
+    return $files;
   }
 
   public function GetFile($fileID) {
+    /** @var FileEntity $file */
     $file = null;
 
     $dbh = $this->dbh();
@@ -34,29 +51,51 @@ class FilesModel extends Model {
     try {
       $sth = $dbh->prepare(self::QUERY_SELECT_FILE);
       $sth->bindValue(':FileID', $fileID, PDO::PARAM_INT);
-      $sth->setFetchMode(PDO::FETCH_CLASS, 'StdClass');
+      $sth->setFetchMode(PDO::FETCH_CLASS, 'FileEntity');
       $sth->execute();
-      $record = $sth->fetch();
-
-      if ($record) {
-        $file = new FileEntity();
-        $file->FileID = $fileID;
-        $file->FileName = $record->FileName;
-        $file->Size = $record->Size;
-        $file->UserID = $record->UserID;
-        $file->ContentType = $record->ContentType;
-        $file->UploadedOn = $record->UploadedOn;
-      }
+      $file = $sth->fetch();
     }
     catch(PDOException $e) {
       throw new DatabaseException($e);
     }
 
-    return $file;
+    return $file ? $file : null;
   }
 
-  public function DeleteFile($fileID) {
+  public function DeleteUserFiles($userID, array $files) {
+    $failed = array();
+    $deleted = array();
 
+    foreach ($files as $fileID) {
+      if (!is_int($fileID))
+        throw new LogicException('A fileID must be an integer.');
+
+      $filePath = $this->storagePath . "$fileID.$userID";
+      if (@unlink($filePath) || !file_exists($filePath)) {
+        $deleted[] = $fileID;
+      }
+      else {
+        $failed[] = $fileID;
+      }
+    }
+
+    if ($deleted) {
+      $files = implode(',', $deleted);
+      $query = sprintf(self::QUERY_DELETE_USER_FILES, $files);
+
+      $dbh = $this->dbh();
+
+      try {
+        $sth = $dbh->prepare($query);
+        $sth->bindValue(':UserID', $userID, PDO::PARAM_INT);
+        $sth->execute();
+      }
+      catch(PDOException $e) {
+        throw new DatabaseException($e);
+      }
+    }
+
+    return $failed;
   }
 
   public function SaveFile(FileSaveRequest $request) {
@@ -92,9 +131,10 @@ class FilesModel extends Model {
     try {
       $sth = $dbh->prepare(self::QUERY_INSERT_FILE);
       $sth->bindValue(':UserID', $request->UserID, PDO::PARAM_INT);
+      $sth->bindValue(':WhereUserID', $request->UserID, PDO::PARAM_INT);
       $sth->bindValue(':FileName', $request->FileName);
       $sth->bindValue(':Size', $fileSize, PDO::PARAM_INT);
-      $sth->bindValue(':ContentType', $request->ContentType, PDO::PARAM_INT);
+      $sth->bindValue(':ContentType', $request->ContentType);
       $sth->bindValue(':MaxFilesPerUser', self::MAX_FILES_PER_USER, PDO::PARAM_INT);
 
       $dbh->beginTransaction();
@@ -102,11 +142,11 @@ class FilesModel extends Model {
 
       if ($sth->rowCount() == 0) {
         $dbh->rollBack();
-        return self::ERROR_FILE_LIMIT_EXCEEDED;
+        return self::ERROR_FILES_LIMIT_EXCEEDED;
       }
 
       $fileID = $this->dbh()->lastInsertId();
-      $permanentPath = $this->storagePath . $fileID;
+      $permanentPath = $this->storagePath . "$fileID.$request->UserID";
       if (!@move_uploaded_file($request->UploadedPath, $permanentPath)) {
         $dbh->rollBack();
         return self::ERROR_SERVER_FAILURE;
@@ -132,13 +172,45 @@ class FilesModel extends Model {
     return self::OPERATION_SUCCEEDED;
   }
 
-  const QUERY_SELECT_FILE = <<<SQL
+  const QUERY_DELETE_USER_FILES = <<<SQL
+    UPDATE
+      Files
+    SET
+      DeletedOn = UTC_TIMESTAMP()
+    WHERE
+      FileID IN (%s)
+    AND
+      UserID = :UserID
+    AND
+      DeletedOn IS NULL
+SQL;
+
+  const QUERY_SELECT_USER_FILES = <<<SQL
     SELECT
-      UserID,
+      FileID,
       FileName,
       Size,
       ContentType,
       UploadedOn
+    FROM
+      Files
+    WHERE
+      UserID = :UserID
+    AND
+      DeletedOn IS NULL
+    ORDER BY
+      UploadedOn DESC
+SQL;
+
+  const QUERY_SELECT_FILE = <<<SQL
+    SELECT
+      FileID,
+      UserID,
+      FileName,
+      Size,
+      ContentType,
+      UploadedOn,
+      DeletedOn
     FROM
       Files
     WHERE
@@ -167,7 +239,7 @@ SQL;
     FROM
       Files
     WHERE
-      UserID = :UserID
+      UserID = :WhereUserID
     AND
       DeletedOn IS NULL
     HAVING

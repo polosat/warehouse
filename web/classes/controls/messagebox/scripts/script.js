@@ -19,10 +19,12 @@ function MessageBox(buttons) {
     self.text.className = 'message-box-text';
     self.messageBox.appendChild(self.text);
 
+    var code = MessageBox.ButtonOK;
     for (var i = 0, count = buttons.length; i < count; i++) {
-      var button = createButton(buttons[i], i);
+      var button = createButton(buttons[i], code);
       self.messageBox.appendChild(button);
       self.buttons[i] = button;
+      code <<= 1;
     }
 
     self.shadow.appendChild(self.messageBox);
@@ -36,7 +38,7 @@ function MessageBox(buttons) {
     button.value = name;
     button.style.display = 'none';
     button.onclick = function() {
-      self.removeClass(self.bodyElement, 'show-message-box');
+      removeClass(self.bodyElement, 'show-message-box');
       self.text.innerHTML = '';
       if (self.onClose) {
         self.onClose(code);
@@ -50,12 +52,12 @@ function MessageBox(buttons) {
 }
 
 
+MessageBox.TypeInfo     = 0;
+MessageBox.TypeError    = 1;
 MessageBox.ButtonOK     = 1;
 MessageBox.ButtonCancel = 2;
 MessageBox.ButtonYes    = 4;
 MessageBox.ButtonNo     = 8;
-MessageBox.TypeInfo     = 0;
-MessageBox.TypeError    = 1;
 
 
 MessageBox.prototype.show = function(text, type, buttons, onClose) {
@@ -81,8 +83,8 @@ MessageBox.prototype.show = function(text, type, buttons, onClose) {
 
   this.onClose = onClose ? onClose : null;
 
-  this.appendClass(this.bodyElement, 'show-message-box');
-  this.appendClass(this.htmlElement, 'show-message-box');
+  appendClass(this.bodyElement, 'show-message-box');
+  appendClass(this.htmlElement, 'show-message-box');
 
   var focused = (buttons == MessageBox.ButtonOK) ? this.buttons[0] : this.messageBox;
   setTimeout(function() {
@@ -90,23 +92,3 @@ MessageBox.prototype.show = function(text, type, buttons, onClose) {
   }, 0);
 };
 
-MessageBox.prototype.appendClass = function(element, className) {
-  var currentClass = element.className;
-  currentClass += currentClass ? ' ' : '';
-  element.className = currentClass + className;
-};
-
-MessageBox.prototype.removeClass = function(element, className) {
-  var currentClass = element.className;
-  var newClass = '';
-  className = className.toLowerCase();
-  if (currentClass) {
-    var classes = currentClass.split(' ');
-    for (var i = 0, count = classes.length; i < count; i++) {
-      if (classes[i].toLowerCase() != className) {
-        newClass += (i == 0 ? '' : ' ') + classes[i];
-      }
-    }
-    element.className = newClass;
-  }
-};

@@ -1,4 +1,5 @@
 <?php
+// TODO: Or even better? We get rid of LayoutBag moving its properties to the LayoutView but still use bags for specific views
 abstract class LayoutViewBag {
   public $stylesheets = array();
   public $scripts = array();

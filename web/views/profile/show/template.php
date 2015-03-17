@@ -6,7 +6,7 @@ $user = $bag->User;
 $strings = $this->ProfileStrings;
 $birthdayFormatted = $this->FormatBirthday();
 ?>
-<div id="user_form" class="form-frame">
+<div id="user_form" class="frame">
   <h1><?=html($user->FirstName)?> <?=html($user->LastName)?></h1>
   <table>
     <tr>

@@ -4,28 +4,51 @@ require_once __DIR__ . '/../../models/files/model.php';
 require_once __DIR__ . '/callback.php';
 
 class FilesController extends Controller {
+  // TODO: Replace exact definitions in the Application class by ControllerClassName::Name (for all controllers)
+  const NAME          = 'files';
+  const ACTION_GET    = 'get';
+  const ACTION_DELETE = 'delete';
+
   protected function Action_Index() {
     $context = $this->context;
     $session = $context->session;
     $request = $context->request;
 
+    $userID = $session->UserID();
     $viewBag = new FilesViewBag();
+
+    $model = new FilesModel($context);
+    $files = $model->GetUserFiles($userID);
+
+    $viewBag->DeleteUri = '/' . self::NAME . '/' . self::ACTION_DELETE;
+    $downloadUriBase = '/' . self::NAME . '/' . self::ACTION_GET . '/';
+    foreach ($files as $file) {
+      $item = new FileViewItem();
+      $item->ID = $file->FileID;
+      $item->Name = $file->FileName;
+      $item->Size = $file->Size;
+      $item->UploadedOn = $this->GetTimestamp($file->UploadedOn);
+      $item->Uri = $downloadUriBase . $file->FileID . '/' . rawurlencode($file->FileName);
+      $viewBag->Files[] = $item;
+    }
+
     $view = new FilesView($viewBag, $request->language);
     $this->InitializeLayoutView($view);
-
     $view->Render();
   }
 
   protected function Action_Get() {
+    // TODO: Check userID here as well. Should we perform this checking at the model level?
     $context = $this->context;
     $session = $context->session;
     $request = $context->request;
 
     if ($request->argument) {
       $a = explode('/', $request->argument);
+      $userID = $session->UserID();
       $fileID = $a[0];
       $fileName = $a[1];
-      $path = $context->StoragePath . $fileID;
+      $path = $context->StoragePath . "$fileID.$userID";
       if (!file_exists($path)) {
         // show message box "The file does not exists";
         return null;
@@ -34,14 +57,13 @@ class FilesController extends Controller {
       // TODO Verify file name as well as fileID
       $model = new FilesModel($context);
       $file = $model->GetFile($request->argument);
-      $userID = $session->UserID();
       if ($file->UserID != $userID) {
         // show message box "The file does not exists";
         return null;
       }
 
       $contentType = empty($file->ContentType) ? 'application/octet-stream' : $file->ContentType;
-      $uri = $context->StorageUri . $fileID;
+      $uri = $context->StorageUri . "$fileID.$userID";
       header('X-Accel-Redirect: ' . $uri);
       header('Content-Type: ' . $contentType);
       header('Content-Disposition: attachment');
@@ -50,10 +72,11 @@ class FilesController extends Controller {
     }
   }
 
-  protected function Action_Delete() {
-
+  protected function ActionPost_Delete() {
+    $a = 0;
   }
 
+  // TODO: rename to 'new'
   protected function ActionPost_Index() {
     $context = $this->context;
     $session = $context->session;
@@ -113,6 +136,11 @@ class FilesController extends Controller {
     $result = $model->SaveFile($saveRequest);
 
     return new Request($request->language, Application::DEFAULT_CONTROLLER, 'Index');
+  }
+
+  protected function GetTimestamp($dateTimeString) {
+    $dateTime = new DateTime($dateTimeString, new DateTimeZone('UTC'));
+    return $dateTime->getTimestamp();
   }
 
   protected function HeaderItemsMask() {

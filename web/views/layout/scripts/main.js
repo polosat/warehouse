@@ -16,15 +16,64 @@ function getChar(e) {
   return null;
 }
 
-if(typeof String.prototype.trim !== 'function') {
-  String.prototype.trim = function() {
-    return this.replace(/^\s+|\s+$/g, '');
-  }
-}
-
 function focusElementByName(name) {
   var fields = document.getElementsByName(name);
   if (fields.length > 0) {
     fields[0].focus();
+  }
+}
+
+function appendClass (element, className) {
+  var currentClass = element.className;
+  currentClass += currentClass ? ' ' : '';
+  element.className = currentClass + className;
+}
+
+function removeClass(element, className) {
+  var currentClass = element.className;
+  var newClass = '';
+  className = className.toLowerCase();
+  if (currentClass) {
+    var classes = currentClass.split(' ');
+    for (var i = 0, count = classes.length; i < count; i++) {
+      if (classes[i].toLowerCase() != className) {
+        newClass += (i == 0 ? '' : ' ') + classes[i];
+      }
+    }
+    element.className = newClass;
+  }
+}
+
+function formatDateTime(elementID, timestamp, h24) {
+  var now = new Date();
+  var date = new Date(timestamp * 1000);
+  var day = date.getDate();
+  var month = date.getMonth();
+  var year = date.getFullYear();
+  var today = now.getDate() == day  && now.getMonth() == month  && now.getFullYear() == year;
+
+  var element = document.getElementById(elementID);
+  if (!today) {
+    element.innerHTML = withZero(day) + '.' + withZero(month + 1) + '.' + year;
+  }
+  else if (h24) {
+    element.innerHTML = date.getHours() + ':' + withZero(date.getMinutes());
+  }
+  else {
+    var hours = date.getHours();
+    var ampm = (hours >= 12) ? 'PM' : 'AM';
+    hours %= 12;
+    hours = hours ? hours : 12;
+    element.innerHTML = hours + ':' + withZero(date.getMinutes()) + ' ' + ampm;
+  }
+}
+
+function withZero(number) {
+  return (number > 9) ? number : ('0' + number);
+}
+
+if(typeof String.prototype.trim !== 'function') {
+  String.prototype.trim = function() {
+    return this.replace(/^\s+|\s+$/g, '');
   }
 }

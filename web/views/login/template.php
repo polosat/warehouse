@@ -4,10 +4,10 @@ $strings = $this->LoginStrings;
 /** @var LoginViewBag $bag */
 $bag = $this->Bag;
 ?>
-<div id="login_form" class="form-frame">
+<div id="login_form" class="frame input-form">
   <h1><?=$strings::TITLE_LOGIN_FORM?></h1>
 <?php if (isset($bag->errorText)): ?>
-  <div class="form-frame-error"><?=$bag->errorText?></div>
+  <div class="input-error"><?=$bag->errorText?></div>
 <?php endif ?>
   <form action="" method="post">
     <label for="login"><?=$strings::LABEL_LOGIN?></label>

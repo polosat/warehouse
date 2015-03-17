@@ -14,6 +14,7 @@ class ModelContext {
   }
 }
 
+// TODO: Remove settings from context?
 class ControllerContext extends ModelContext {
   /** @var Session */
   public $session;

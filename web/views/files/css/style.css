@@ -1,0 +1,159 @@
+#files_frame {
+  width: 700px;
+  padding: 0 15px 15px;
+}
+
+#files_frame h1 {
+  margin-bottom: 4px;
+}
+
+#toolbar {
+  margin-left: 2px;
+}
+
+#files_table {
+  background-color: #FFFFFF;
+  border: 1px solid #E7E7E7;
+  margin-top: 4px;
+  border-bottom: 0;
+  width: 700px;
+}
+
+.files-header {
+  background-color: #F7F7F7;
+  font-weight: bolder;
+}
+
+.files-row {
+  border-bottom: 1px solid #E7E7E7;
+  cursor: default;
+  height: 31px;
+  color: #404040;
+}
+
+.files-row .column {
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  white-space: nowrap;
+  overflow: hidden;
+  vertical-align: top;
+  margin: 8px 0 0;
+  padding: 0 0 0 4px;
+}
+
+.files-row .column-first {
+  border-right: 1px solid #E7E7E7;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 32px;
+  height: 31px;
+  text-align: center;
+}
+
+.files-row .column-first label {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  height: 31px;
+  width: 32px;
+}
+
+.files-row .column-first label input {
+  margin: 0;
+  padding: 0;
+  height: 31px;
+}
+
+.files-row .column-name {
+  width: 460px;
+  text-overflow: ellipsis;
+  border: 0;
+}
+
+.files-row .column-name a {
+  text-decoration: none;
+  color: #000000;
+}
+
+.files-row .column-name a:hover {
+  text-decoration: underline;
+  color: #4040CC;
+}
+
+.files-row .column-size {
+  width: 80px;
+  text-align: right;
+  border: 0;
+}
+
+.files-row .column-uploaded {
+  width: 100px;
+  text-align: right;
+}
+
+.tb-button {
+  padding: 0;
+  margin: 0 2px;
+  display: inline-block;
+  *display: inline;
+  zoom: 1;
+  width: 23px;
+  height: 23px;
+  border: 1px solid #FFFFFF;
+  vertical-align: middle;
+}
+
+.tb-button-enabled:hover {
+  border: 1px solid #C0CCFF;
+}
+
+#tb_upload_file {
+  background: url("/views/files/img/upload-disabled.png") 1px 1px no-repeat;
+}
+
+#tb_upload_file.tb-button-enabled {
+  background: url("/views/files/img/upload.png") 1px 1px no-repeat;
+}
+
+#tb_delete_file {
+  background: url("/views/files/img/trash-disabled.png") 1px 1px no-repeat;
+}
+
+#tb_delete_file.tb-button-enabled {
+  background: url("/views/files/img/trash.png") 1px 1px no-repeat;
+}
+
+#tb_hint {
+  display: inline-block;
+  *display: inline;
+  zoom: 1;
+  color: #808080;
+  width: 638px;
+  text-align: right;
+  vertical-align: middle;
+  font-size: 11px;
+}
+
+.file-input {
+  position: relative;
+  top: 0;
+  left: -10px;
+  width: 35px;
+  height: 21px;
+  filter:alpha(opacity=0);
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  /*cursor: pointer;*/
+}
+
+.file-input-wrapper {
+  position: relative;
+  left: 0;
+  top: 0;
+  width: 23px;
+  height: 23px;
+  overflow: hidden;
+}
