@@ -15,12 +15,12 @@ class FilesController extends Controller {
     $request = $context->request;
 
     $userID = $session->UserID();
-    $viewBag = new FilesViewBag();
+    $bag = new FilesViewBag();
 
     $model = new FilesModel($context);
     $files = $model->GetUserFiles($userID);
 
-    $viewBag->DeleteUri = '/' . self::NAME . '/' . self::ACTION_DELETE;
+    $bag->DeleteUri = '/' . self::NAME . '/' . self::ACTION_DELETE;
     $downloadUriBase = '/' . self::NAME . '/' . self::ACTION_GET . '/';
     foreach ($files as $file) {
       $item = new FileViewItem();
@@ -29,10 +29,10 @@ class FilesController extends Controller {
       $item->Size = $file->Size;
       $item->UploadedOn = $this->GetTimestamp($file->UploadedOn);
       $item->Uri = $downloadUriBase . $file->FileID . '/' . rawurlencode($file->FileName);
-      $viewBag->Files[] = $item;
+      $bag->Files[] = $item;
     }
 
-    $view = new FilesView($viewBag, $request->language);
+    $view = new FilesView($bag, $request->language);
     $this->InitializeLayoutView($view);
     $view->Render();
   }
@@ -47,8 +47,8 @@ class FilesController extends Controller {
       $a = explode('/', $request->argument);
       $userID = $session->UserID();
       $fileID = $a[0];
-      $fileName = $a[1];
-      $path = $context->StoragePath . "$fileID.$userID";
+      //$fileName = $a[1];
+      $path = Settings::STORAGE_PATH . "$fileID.$userID";
       if (!file_exists($path)) {
         // show message box "The file does not exists";
         return null;
@@ -63,7 +63,7 @@ class FilesController extends Controller {
       }
 
       $contentType = empty($file->ContentType) ? 'application/octet-stream' : $file->ContentType;
-      $uri = $context->StorageUri . "$fileID.$userID";
+      $uri = Settings::STORAGE_URI . "$fileID.$userID";
       header('X-Accel-Redirect: ' . $uri);
       header('Content-Type: ' . $contentType);
       header('Content-Disposition: attachment');

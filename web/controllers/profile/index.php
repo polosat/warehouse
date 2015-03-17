@@ -13,17 +13,17 @@ class ProfileController extends Controller {
     $request = $context->request;
     $session = $context->session;
 
-    $viewBag = new ShowProfileViewBag();
-    $view = new ShowProfileView($viewBag, $request->language);
+    $bag = new ShowProfileViewBag();
+    $view = new ShowProfileView($bag, $request->language);
     $this->InitializeLayoutView($view);
-    $viewBag->EditUri = Request::CreateUri($request->language, Application::PROFILE_CONTROLLER, self::ACTION_EDIT);
+    $bag->EditUri = Request::CreateUri($request->language, Application::PROFILE_CONTROLLER, self::ACTION_EDIT);
     $strings = $view->ProfileStrings;
 
     $callback = $this->UnserializeCallback();
 
     if ($callback instanceof ShowProfileCallback) {
       if ($callback->reason == ShowProfileCallback::REASON_PROFILE_CHANGED) {
-        $viewBag->alert = new MessageBox($strings::MESSAGE_PROFILE_CHANGED, MessageBox::TYPE_INFO);
+        $view->alert = new MessageBox($strings::MESSAGE_PROFILE_CHANGED, MessageBox::TYPE_INFO);
       }
       else {
         throw new LogicException('Unexpected redirect reason.');
@@ -39,7 +39,7 @@ class ProfileController extends Controller {
       return $this->CreateCallbackRequest($callback, Application::LOGIN_CONTROLLER);
     }
 
-    $viewBag->User = $user;
+    $bag->User = $user;
     $view->Render();
     return null;
   }
@@ -49,10 +49,10 @@ class ProfileController extends Controller {
     $request = $context->request;
     $session = $context->session;
 
-    $viewBag = new EditProfileViewBag();
-    $view = new EditProfileView($viewBag, $request->language);
+    $bag = new EditProfileViewBag();
+    $view = new EditProfileView($bag, $request->language);
     $this->InitializeLayoutView($view);
-    $viewBag->CancelUri = Request::CreateUri($request->language, Application::PROFILE_CONTROLLER);
+    $bag->CancelUri = Request::CreateUri($request->language, Application::PROFILE_CONTROLLER);
     $strings = $view->ProfileStrings;
 
     $callback = $this->UnserializeCallback();
@@ -62,13 +62,13 @@ class ProfileController extends Controller {
         throw new LogicException('Unexpected redirect reason.');
 
       if (isset($callback->OperationResult->Errors[ProfileOperationResult::ERROR_DUPLICATED_RECORD])) {
-        $viewBag->alert = new MessageBox($strings::ERROR_NOT_CHANGED);
+        $view->alert = new MessageBox($strings::ERROR_NOT_CHANGED);
       }
       else {
         $this->PopulateValidationErrors($view, $callback->OperationResult);
       }
 
-      $viewBag->User = $callback->User;
+      $bag->User = $callback->User;
     }
     else {
       $model = new ProfileModel($context);
@@ -80,7 +80,7 @@ class ProfileController extends Controller {
         return $this->CreateCallbackRequest($callback, Application::LOGIN_CONTROLLER);
       }
 
-      $viewBag->User = $user;
+      $bag->User = $user;
     }
 
     $view->Render();
@@ -120,11 +120,11 @@ class ProfileController extends Controller {
     $request = $context->request;
     $session = $context->session;
 
-    $viewBag = new EditProfileViewBag();
-    $viewBag->User = new UserEntity();
-    $view = new EditProfileView($viewBag, $request->language);
+    $bag = new EditProfileViewBag();
+    $bag->User = new UserEntity();
+    $view = new EditProfileView($bag, $request->language);
     $this->InitializeLayoutView($view);
-    $viewBag->CancelUri = Request::CreateUri($request->language, Application::PROFILE_CONTROLLER);
+    $bag->CancelUri = Request::CreateUri($request->language, Application::PROFILE_CONTROLLER);
 
     $callback = $this->UnserializeCallback();
 
@@ -133,7 +133,7 @@ class ProfileController extends Controller {
         throw new LogicException('Unexpected redirect reason.');
 
       $this->PopulateValidationErrors($view, $callback->OperationResult);
-      $viewBag->User = $callback->User;
+      $bag->User = $callback->User;
     }
     else if ($session->IsAuthenticated()) {
       // An authenticated user shouldn't be able to see this page
@@ -192,54 +192,53 @@ class ProfileController extends Controller {
   }
 
   protected function PopulateValidationErrors(EditProfileView $view, ProfileOperationResult $operationResult) {
-    /** @var EditProfileViewBag $viewBag */
-    $viewBag = $view->Bag;
+    $bag = $view->Bag;
     $strings = $view->ProfileStrings;
 
     if (isset($operationResult->Errors[ProfileOperationResult::ERROR_DUPLICATED_RECORD])) {
-      $viewBag->alert = new MessageBox($strings::ERROR_NOT_CHANGED);
+      $view->alert = new MessageBox($strings::ERROR_NOT_CHANGED);
     }
     else {
       foreach ($operationResult->Errors as $error) {
         switch ($error) {
           case ProfileOperationResult::ERROR_INVALID_LOGIN:
-            $viewBag->validationErrors[EditProfileView::FIELD_NAME_LOGIN] = $strings::ERROR_LOGIN;
+            $bag->validationErrors[EditProfileView::FIELD_NAME_LOGIN] = $strings::ERROR_LOGIN;
             break;
 
           case ProfileOperationResult::ERROR_LOGIN_ALREADY_EXISTS:
-            $viewBag->validationErrors[EditProfileView::FIELD_NAME_LOGIN] = $strings::ERROR_LOGIN_EXISTS;
+            $bag->validationErrors[EditProfileView::FIELD_NAME_LOGIN] = $strings::ERROR_LOGIN_EXISTS;
             break;
 
           case ProfileOperationResult::ERROR_BAD_CURRENT_PASSWORD:
-            $viewBag->validationErrors[EditProfileView::FIELD_NAME_PASSWORD_CURRENT] = $strings::ERROR_NOT_AUTHENTICATED;
+            $bag->validationErrors[EditProfileView::FIELD_NAME_PASSWORD_CURRENT] = $strings::ERROR_NOT_AUTHENTICATED;
             break;
 
           case ProfileOperationResult::ERROR_INVALID_PASSWORD:
-            $viewBag->validationErrors[EditProfileView::FIELD_NAME_PASSWORD] = $strings::ERROR_PASSWORD_PATTERN;
+            $bag->validationErrors[EditProfileView::FIELD_NAME_PASSWORD] = $strings::ERROR_PASSWORD_PATTERN;
             break;
 
           case ProfileOperationResult::ERROR_PASSWORDS_MISMATCH:
-            $viewBag->validationErrors[EditProfileView::FIELD_NAME_PASSWORD_CONFIRM] = $strings::ERROR_PASSWORD_CONFIRM;
+            $bag->validationErrors[EditProfileView::FIELD_NAME_PASSWORD_CONFIRM] = $strings::ERROR_PASSWORD_CONFIRM;
             break;
 
           case ProfileOperationResult::ERROR_INVALID_FIRST_NAME:
-            $viewBag->validationErrors[EditProfileView::FIELD_NAME_FIRST_NAME] = $strings::ERROR_FIRST_NAME;
+            $bag->validationErrors[EditProfileView::FIELD_NAME_FIRST_NAME] = $strings::ERROR_FIRST_NAME;
             break;
 
           case ProfileOperationResult::ERROR_INVALID_LAST_NAME:
-            $viewBag->validationErrors[EditProfileView::FIELD_NAME_LAST_NAME] = $strings::ERROR_LAST_NAME;
+            $bag->validationErrors[EditProfileView::FIELD_NAME_LAST_NAME] = $strings::ERROR_LAST_NAME;
             break;
 
           case ProfileOperationResult::ERROR_INVALID_BIRTHDAY:
-            $viewBag->validationErrors[EditProfileView::FIELD_NAME_BIRTHDAY] = $strings::ERROR_BIRTHDAY;
+            $bag->validationErrors[EditProfileView::FIELD_NAME_BIRTHDAY] = $strings::ERROR_BIRTHDAY;
             break;
 
           case ProfileOperationResult::ERROR_INVALID_PHONE:
-            $viewBag->validationErrors[EditProfileView::FIELD_NAME_PHONE] = $strings::ERROR_PHONE_FORMAT;
+            $bag->validationErrors[EditProfileView::FIELD_NAME_PHONE] = $strings::ERROR_PHONE_FORMAT;
             break;
 
           case ProfileOperationResult::ERROR_INVALID_EMAIL:
-            $viewBag->validationErrors[EditProfileView::FIELD_NAME_EMAIL] = $strings::ERROR_EMAIL_FORMAT;
+            $bag->validationErrors[EditProfileView::FIELD_NAME_EMAIL] = $strings::ERROR_EMAIL_FORMAT;
             break;
 
           default:

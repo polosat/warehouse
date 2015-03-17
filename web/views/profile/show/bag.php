@@ -1,5 +1,5 @@
 <?php
-class ShowProfileViewBag extends LayoutViewBag {
+class ShowProfileViewBag {
   /** @var  UserEntity */
   public $User;
   public $EditUri;

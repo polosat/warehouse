@@ -1,5 +1,5 @@
 <?php
-class LoginViewBag extends LayoutViewBag {
+class LoginViewBag {
   public $userName;
   public $errorText;
 }

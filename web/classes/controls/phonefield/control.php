@@ -7,6 +7,6 @@ class PhoneField {
   }
 
   public function Render() {
-    require __DIR__ . '/template.php';
+    require 'template.php';
   }
 }

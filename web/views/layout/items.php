@@ -1,21 +1,4 @@
 <?php
-// TODO: Or even better? We get rid of LayoutBag moving its properties to the LayoutView but still use bags for specific views
-abstract class LayoutViewBag {
-  public $stylesheets = array();
-  public $scripts = array();
-
-  public $headerTitle = '';
-
-  /** @var  HeaderItem[] */
-  public $headerItems = array();
-
-  /** @var  LanguageItem[] */
-  public $languageItems = array();
-
-  /** @var  MessageBox */
-  public $alert;
-}
-
 class HeaderItem {
   const FILES     = 0x1;
   const PROFILE   = 0x2;

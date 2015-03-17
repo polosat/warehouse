@@ -1,7 +1,6 @@
 <?php
 /** @var LoginView $this */
 $strings = $this->LoginStrings;
-/** @var LoginViewBag $bag */
 $bag = $this->Bag;
 ?>
 <div id="login_form" class="frame input-form">

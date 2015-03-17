@@ -1,16 +1,12 @@
 <?php
-// TODO: Remove settings from context?
-class ControllerContext {
-  /** @var Session */
+class RuntimeContext {
   public $session;
-  /** @var Request | PostRequest */
   public $request;
-
   public $languages;
-
   public $serializedCallback;
 
   public function __construct(Request $request, Session $session) {
+    /** @var Request | PostRequest $request */
     $this->request = $request;
     $this->session = $session;
 

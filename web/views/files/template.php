@@ -1,12 +1,12 @@
 <?php
-/** @var FilesViewStrings $strings */
-/** @var FileViewItem[] $files */
+/** @var FilesView $this */
+$strings = $this->FilesStrings;
+$layoutStrings = $this->LayoutStrings;
 $files = $this->Bag->Files;
 $filesCount = count($files);
-$strings = $this->FilesStrings;
 ?>
 <script type="text/javascript">
-  var h24 = <?=$strings::TIME_FORMAT_H24?>;
+  var h24 = <?=$layoutStrings::TIME_FORMAT_H24?>;
 
   // TODO: Leave variables here but move logic into a dedicated js file
   function onDeleteButtonClick() {

@@ -12,7 +12,7 @@ abstract class Controller {
 
   protected $context;
 
-  public function __construct(ControllerContext $context) {
+  public function __construct(RuntimeContext $context) {
     $this->context = $context;
   }
 
@@ -81,34 +81,33 @@ abstract class Controller {
     $context = $this->context;
     $request = $context->request;
     $layoutStrings = $view->LayoutStrings;
-    $bag = $view->Bag;
 
     $selectedLanguage = $request->language;
     $defaultLanguage = $context->languages[0];
 
     // Get the current uri without a language prefix
     $baseUri = $request->Uri('');
-    $bag->languageItems = array();
+    $view->languageItems = array();
 
     // Reserve a place for the selected language, it should be first
-    $bag->languageItems[] = null;
+    $view->languageItems[] = null;
     foreach ($context->languages as $language) {
       $default = ($language == $defaultLanguage);
       $languageName = $layoutStrings->GetConstant("LANGUAGE_$language");
       $uriLanguagePrefix = $default ? '' : "/$language";
 
       if ($default && empty($selectedLanguage) || $language == $selectedLanguage) {
-        $bag->languageItems[0] = new LanguageItem($language, $languageName, $default);
+        $view->languageItems[0] = new LanguageItem($language, $languageName, $default);
       }
       else {
-        $bag->languageItems[] = new LanguageItem($language, $languageName, $default, $uriLanguagePrefix . $baseUri);
+        $view->languageItems[] = new LanguageItem($language, $languageName, $default, $uriLanguagePrefix . $baseUri);
       }
     }
 
     // Initialize header items
     $uriLanguagePrefix = empty($selectedLanguage) ? '' : "/$selectedLanguage";
     $headerItemsMask = $this->HeaderItemsMask();
-    $bag->headerItems = array();
+    $view->headerItems = array();
     $itemID = 1;
 
     while ($headerItemsMask) {
@@ -142,7 +141,7 @@ abstract class Controller {
           default:
             throw new LogicException('Unexpected header link.');
         }
-        $bag->headerItems[] = new HeaderItem($title, $uriLanguagePrefix . $uri);
+        $view->headerItems[] = new HeaderItem($title, $uriLanguagePrefix . $uri);
         $headerItemsMask &= ~$itemID;
       }
       $itemID <<= 1;

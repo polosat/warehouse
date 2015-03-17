@@ -1,6 +1,6 @@
 <?php
-class EditProfileViewBag extends LayoutViewBag {
-  /** @var  UserEntity */
+class EditProfileViewBag {
+  /** @var UserEntity */
   public $User;
   public $validationErrors = array();
   public $CancelUri;

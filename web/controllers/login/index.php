@@ -16,8 +16,8 @@ class LoginController extends Controller {
       return new Request($request->language);
     }
 
-    $viewBag = new LoginViewBag();
-    $view = new LoginView($viewBag, $request->language);
+    $bag = new LoginViewBag();
+    $view = new LoginView($bag, $request->language);
     $this->InitializeLayoutView($view);
 
     $strings = $view->LoginStrings;
@@ -25,25 +25,25 @@ class LoginController extends Controller {
     if (isset($callback)) {
       switch ($callback->reason) {
         case LoginCallback::REASON_AUTHENTICATION_FAILED:
-          $viewBag->errorText = $strings::ERROR_AUTHENTICATION_FAILED;
-          $viewBag->userName = $callback->UserName;
+          $bag->errorText = $strings::ERROR_AUTHENTICATION_FAILED;
+          $bag->userName = $callback->UserName;
           break;
 
         case LoginCallback::REASON_SESSION_EXPIRED:
-          $viewBag->alert = new MessageBox($strings::ERROR_SESSION_EXPIRED);
+          $view->alert = new MessageBox($strings::ERROR_SESSION_EXPIRED);
           break;
 
         case LoginCallback::REASON_AUTHENTICATION_REQUIRED:
-          //$viewBag->alert = new MessageBox($strings::ERROR_AUTHENTICATION_REQUIRED);
+          //$view->alert = new MessageBox($strings::ERROR_AUTHENTICATION_REQUIRED);
           break;
 
         case LoginCallback::REASON_UNKNOWN_USER_ID:
-          $viewBag->alert = new MessageBox($strings::ERROR_UNKNOWN_USER);
+          $view->alert = new MessageBox($strings::ERROR_UNKNOWN_USER);
           break;
 
         case LoginCallback::REASON_SHOW_MESSAGE:
           if (isset($callback->alert)) {
-            $viewBag->alert = $callback->alert;
+            $view->alert = $callback->alert;
           }
           break;
 

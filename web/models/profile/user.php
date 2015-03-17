@@ -42,7 +42,6 @@ class UserEntity {
 }
 
 class ProfileChangeRequest {
-  /** @var  UserEntity */
   public $User;
   public $PasswordConfirmation;
   public $CurrentPassword;

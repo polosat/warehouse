@@ -1,10 +1,9 @@
 <?php
 /** @var EditProfileView $this */
-/** @var EditProfileViewBag $bag */
-/** @var DatePicker $birthdayPicker */
 $bag = $this->Bag;
 $user = $bag->User;
 $strings = $this->ProfileStrings;
+
 $existingUser = isset($user->UserID);
 $submitName = $existingUser ? $strings::BUTTON_CHANGE : $strings::BUTTON_REGISTER;
 ?>

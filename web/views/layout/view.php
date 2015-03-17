@@ -1,38 +1,58 @@
 <?php
-require_once __DIR__ . '/bag.php';
 require_once __DIR__ . '/strings.php';
+require_once __DIR__ . '/items.php';
 require_once __DIR__ . '/../../classes/controls/messagebox/control.php';
 
 abstract class LayoutView {
   abstract protected function RenderBody();
   abstract protected function BeforeLayoutRender();
 
-  /** @var  LayoutViewStrings */
   public $LayoutStrings;
-  public $Bag;
 
-  protected $messageBoxRequired = false;
-  protected $focusedElement;
+  public $stylesheets;
+  public $scripts;
 
-  //TODO: Remove the 'Bag' concept completely? Is it unnecessary? We can keep the data directly in the view's fields
-  protected function __construct(LayoutViewBag $bag, $language) {
-    $this->Bag = $bag;
-    $this->LayoutStrings = LayoutViewStrings::GetInstance($language);
+  public $headerTitle;
+  public $headerItems;
+  public $languageItems = array();
+
+  public $alert;
+  public $messageBoxRequired = false;
+
+  public $focusedElement;
+
+  protected function __construct($language) {
+    /** @var LayoutViewStrings  $strings */
+    /** @var HeaderItem[]       $headerItems */
+    /** @var LanguageItem[]     $languageItems */
+    /** @var MessageBox         $alert */
+
+    $strings = LayoutViewStrings::GetInstance($language);
+    $headerItems = array();
+    $languageItems = array();
+    $alert = null;
+
+    $this->headerItems = $headerItems;
+    $this->languageItems = $languageItems;
+    $this->LayoutStrings = $strings;
+    $this->stylesheets = array();
+    $this->scripts = array();
+    $this->headerTitle = '';
+    $this->alert = $alert;
   }
 
   public function Render() {
     $this->BeforeLayoutRender();
 
-    $bag = $this->Bag;
-    $bag->scripts[] = '/views/layout/scripts/main.js';
-    $bag->stylesheets[] = '/views/layout/css/main.css';
-    $bag->stylesheets[] = '/views/layout/css/drop-menu.css';
+    $this->scripts[] = '/views/layout/scripts/main.js';
+    $this->stylesheets[] = '/views/layout/css/main.css';
+    $this->stylesheets[] = '/views/layout/css/drop-menu.css';
 
-    $this->messageBoxRequired = $this->messageBoxRequired || isset($bag->alert);
+    $this->messageBoxRequired = $this->messageBoxRequired || isset($this->alert);
 
     if ($this->messageBoxRequired) {
-      $bag->stylesheets[] = '/classes/controls/messagebox/css/style.css';
-      $bag->scripts[] = '/classes/controls/messagebox/scripts/script.js';
+      $this->stylesheets[] = '/classes/controls/messagebox/css/style.css';
+      $this->scripts[] = '/classes/controls/messagebox/scripts/script.js';
     }
 
     require 'template.php';

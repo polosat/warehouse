@@ -1,8 +1,8 @@
 <?php
-require_once 'session.php';
-require_once 'request.php';
-require_once 'context.php';
-require_once 'controller.php';
+require_once __DIR__ . '/session.php';
+require_once __DIR__ . '/request.php';
+require_once __DIR__ . '/context.php';
+require_once __DIR__ . '/controller.php';
 require_once __DIR__ . '/../views/404/view.php';
 
 class Application {
@@ -42,7 +42,7 @@ class Application {
       $request = Request::Parse();
       $session = Session::Open();
 
-      $context = new ControllerContext($request, $session);
+      $context = new RuntimeContext($request, $session);
       $controller = $this->CreateController($context);
       $callbackRequest = $controller->Invoke();
 
@@ -56,7 +56,7 @@ class Application {
     }
   }
 
-  protected function CreateController(ControllerContext $context) {
+  protected function CreateController(RuntimeContext $context) {
     $request = $context->request;
     $name = empty($request->controller) ? Application::DEFAULT_CONTROLLER : $request->controller;
 

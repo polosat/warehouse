@@ -1,6 +1,5 @@
 <?php
 /** @var ShowProfileView $this */
-/** @var ShowProfileViewBag $bag */
 $bag = $this->Bag;
 $user = $bag->User;
 $strings = $this->ProfileStrings;

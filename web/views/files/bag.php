@@ -1,6 +1,6 @@
 <?php
-class FilesViewBag extends LayoutViewBag {
-  /** @var  FileViewItem[] */
+class FilesViewBag {
+  /** @var FileViewItem[] */
   public $Files = array();
   public $DeleteUri;
 }

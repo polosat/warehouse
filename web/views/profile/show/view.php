@@ -1,21 +1,23 @@
 <?php
-require_once 'bag.php';
-require_once 'strings.php';
+require_once __DIR__ . '/bag.php';
+require_once __DIR__ . '/strings.php';
 require_once __DIR__ . '/../../../classes/controls/datepicker/control.php';
 
 class ShowProfileView extends LayoutView {
-  /** @var  ShowProfileViewStrings */
   public $ProfileStrings;
+  public $Bag;
 
   public function __construct(ShowProfileViewBag $bag, $language) {
-    parent::__construct($bag, $language);
-    $this->ProfileStrings = ShowProfileViewStrings::GetInstance($language);
+    /** @var  ShowProfileViewStrings $strings*/
+    $strings = ShowProfileViewStrings::GetInstance($language);
+
+    parent::__construct($language);
+    $this->ProfileStrings = $strings;
+    $this->Bag = $bag;
   }
 
   protected function FormatBirthday() {
-    /** @var ShowProfileViewBag $bag */
-    $bag = $this->Bag;
-    $birthday = $bag->User->Birthday;
+    $birthday = $this->Bag->User->Birthday;
     $language = $this->ProfileStrings->GetLanguage();
 
     if (isset($birthday)) {
@@ -29,12 +31,10 @@ class ShowProfileView extends LayoutView {
   }
 
   protected function BeforeLayoutRender() {
-    /** @var ShowProfileViewBag $bag */
-    $bag = $this->Bag;
     $strings = $this->ProfileStrings;
 
-    $bag->headerTitle = $strings::HEADER_TITLE;
-    $bag->stylesheets[] = '/views/profile/show/css/style.css';
+    $this->headerTitle = $strings::HEADER_TITLE;
+    $this->stylesheets[] = '/views/profile/show/css/style.css';
   }
 
   protected function RenderBody() {
