@@ -9,15 +9,15 @@ class Settings {
   const DB_PASSWORD = 'SecureP@ssw0rd';
   const DB_CHARSET  = 'utf8';
 
-  // TODO: We should investigate here: what does mean 1M in nginx and php configuration files, and do the same in the code
   const STORAGE_PATH        = '/Users/polosat/Code/bitbucket/smalltools/tallinn/warehouse/';
   const STORAGE_URI         = '/warehouse/';
-  const BYTES_1MB           = 1048576;
+
   const MAX_FILES_PER_USER  = 20;
-  const MAX_FILE_SIZE       = self::BYTES_1MB;
+  const MAX_FILE_SIZE       = 1048576;
+  const SHOW_DECIMAL_SIZE   = false;
 
   // Session timeout in seconds
   const SESSION_TIMEOUT = 600;
 
-  const VERSION = '2.5';
+  const VERSION = '2.9';
 }

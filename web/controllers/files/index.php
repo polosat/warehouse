@@ -4,24 +4,35 @@ require_once __DIR__ . '/../../models/files/model.php';
 require_once __DIR__ . '/callback.php';
 
 class FilesController extends Controller {
-  // TODO: Replace exact definitions in the Application class by ControllerClassName::Name (for all controllers)
-  const NAME          = 'files';
-  const ACTION_GET    = 'get';
-  const ACTION_DELETE = 'delete';
+  const CONTROLLER_NAME = Application::FILES_CONTROLLER;
+  const ACTION_GET      = 'get';
+  const ACTION_NEW      = 'new';
+  const ACTION_DELETE   = 'delete';
 
   protected function Action_Index() {
     $context = $this->context;
     $session = $context->Session;
     $request = $context->Request;
+    $language = $request->Language;
+
+    $bag = new FilesViewBag();
+    $view = new FilesView($bag, $request->Language);
+    $this->InitializeLayoutView($view);
+
+    $callback = $this->UnserializeCallback();
+    if ($callback instanceof FilesCallback) {
+      $view->Alert = $callback->Alert;
+    }
 
     $userID = $session->UserID();
-    $bag = new FilesViewBag();
-
     $model = new FilesModel($context);
     $files = $model->GetUserFiles($userID);
 
-    $bag->DeleteUri = '/' . self::NAME . '/' . self::ACTION_DELETE;
-    $downloadUriBase = '/' . self::NAME . '/' . self::ACTION_GET . '/';
+    $bag->UploadUri = Request::CreateUri($language, self::CONTROLLER_NAME, self::ACTION_NEW);
+    $bag->DeleteUri = Request::CreateUri($language, self::CONTROLLER_NAME, self::ACTION_DELETE);
+    $downloadUriBase = Request::CreateUri($language, self::CONTROLLER_NAME, self::ACTION_GET) . '/';
+
+    $bag->TotalSize = 0;
     foreach ($files as $file) {
       $item = new FileViewItem();
       $item->ID = $file->FileID;
@@ -30,72 +41,115 @@ class FilesController extends Controller {
       $item->UploadedOn = $this->GetTimestamp($file->UploadedOn);
       $item->Uri = $downloadUriBase . $file->FileID . '/' . rawurlencode($file->FileName);
       $bag->Files[] = $item;
+      $bag->TotalSize += $item->Size;
     }
 
-    $view = new FilesView($bag, $request->Language);
-    $this->InitializeLayoutView($view);
     $view->Render();
   }
 
   protected function Action_Get() {
-    // TODO: Check userID here as well. Should we perform this checking at the model level?
     $context = $this->context;
     $session = $context->Session;
     $request = $context->Request;
+    $language = $request->Language;
+    /** @var FilesViewStrings $strings */
+    $strings = FilesViewStrings::GetInstance($language);
 
-    if ($request->Argument) {
-      $a = explode('/', $request->Argument);
-      $userID = $session->UserID();
-      $fileID = $a[0];
-      //$fileName = $a[1];
-      $path = Settings::STORAGE_PATH . "$fileID.$userID";
-      if (!file_exists($path)) {
-        // show message box "The file does not exists";
-        return null;
-      }
+    $idName = explode('/', $request->Argument);
+    if (count($idName) != 2)
+      return new Request($language, self::CONTROLLER_NAME);
 
-      // TODO Verify file name as well as fileID
-      $model = new FilesModel($context);
-      $file = $model->GetFile($request->Argument);
-      if ($file->UserID != $userID) {
-        // show message box "The file does not exists";
-        return null;
-      }
+    $userID = $session->UserID();
+    $fileID = intval($idName[0]);
+    $fileName = mb_strtolower($idName[1]);
+    $fileNameInternal = "$fileID.$userID";
 
-      $contentType = empty($file->ContentType) ? 'application/octet-stream' : $file->ContentType;
-      $uri = Settings::STORAGE_URI . "$fileID.$userID";
-      header('X-Accel-Redirect: ' . $uri);
-      header('Content-Type: ' . $contentType);
-      header('Content-Disposition: attachment');
+    $path = Settings::STORAGE_PATH . $fileNameInternal;
 
-      return null;
+    if (!file_exists($path)) {
+      $callback = new FilesCallback($strings::ERROR_FILE_NOT_FOUND);
+      return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
     }
+
+    $model = new FilesModel($context);
+    $file = $model->GetFile($fileID, $fileName);
+
+    if (is_null($file) || $file->UserID != $userID || mb_strtolower($file->FileName) != $fileName ) {
+      $callback = new FilesCallback($strings::ERROR_FILE_NOT_FOUND);
+      return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+    }
+
+    $contentType = empty($file->ContentType) ? 'application/octet-stream' : $file->ContentType;
+    $uri = Settings::STORAGE_URI . $fileNameInternal;
+    header('X-Accel-Redirect: ' . $uri);
+    header('Content-Type: ' . $contentType);
+    header('Content-Disposition: attachment');
+
+    return null;
   }
 
   protected function ActionPost_Delete() {
-    $a = 0;
-  }
-
-  // TODO: rename to 'new'
-  protected function ActionPost_Index() {
     $context = $this->context;
     $session = $context->Session;
     $request = $context->Request;
-    $files = $request->Files;
+    $language = $request->Language;
+
+    $filesToDelete = $request->GetPostedValue(FilesView::FIELD_NAME_SELECTED_FILE);
+    if (is_array($filesToDelete) && count($filesToDelete) > 0) {
+      $userID = $session->UserID();
+      $model = new FilesModel();
+      $failed = $model->DeleteUserFiles($userID, $filesToDelete);
+
+      if ($failed) {
+        /** @var FilesViewStrings $strings */
+        $strings = FilesViewStrings::GetInstance($language);
+        $errorMessage = (count($filesToDelete) > 1) ? $strings::ERROR_DELETE_FILES : $strings::ERROR_DELETE_FILE;
+        $callback = new FilesCallback($errorMessage);
+        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+      }
+    }
+    return new Request($language, self::CONTROLLER_NAME);
+  }
+
+  protected function Action_New() {
+    $context = $this->context;
+    $request = $context->Request;
+    $language = $request->Language;
+
+    /** @var FilesViewStrings $strings */
+    $strings = FilesViewStrings::GetInstance($language);
 
     if ($request->Error == 413) {
-      // show message box "The file size exceeds the limit allowed"
-      return null;
+      $callback = new FilesCallback($strings::ERROR_FILE_SIZE_TOO_BIG);
+      return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+    }
+
+    return new Request($language, self::CONTROLLER_NAME);
+  }
+
+  protected function ActionPost_New() {
+    $context = $this->context;
+    $session = $context->Session;
+    $request = $context->Request;
+    $language = $request->Language;
+    $files = $request->Files;
+
+    /** @var FilesViewStrings $strings */
+    $strings = FilesViewStrings::GetInstance($language);
+
+    if ($request->Error == 413) {
+      $callback = new FilesCallback($strings::ERROR_FILE_SIZE_TOO_BIG);
+      return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
     }
 
     if (count($files) == 0) {
-      // show message box "No file was selected"
-      return null;
+      $callback = new FilesCallback($strings::ERROR_NO_FILE_SELECTED);
+      return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
     }
 
-    if (count($files) != 1 || $files[0]->Field != FilesView::FIELD_NAME_USER_FILE) {
-      // show message box "Invalid request"
-      return null;
+    if (count($files) != 1 || $files[0]->Field != FilesView::FIELD_NAME_UPLOADED_FILE) {
+      $callback = new FilesCallback($strings::ERROR_INVALID_REQUEST);
+      return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
     }
 
     $file = $files[0];
@@ -105,26 +159,26 @@ class FilesController extends Controller {
         break;
 
       case UPLOAD_ERR_NO_FILE:
-        // show message box "No file was selected"
-        break;
+        $callback = new FilesCallback($strings::ERROR_NO_FILE_SELECTED);
+        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
 
       case UPLOAD_ERR_INI_SIZE:
       case UPLOAD_ERR_FORM_SIZE:
-        // show message box "The file size exceeds the limit allowed"
-        return null;
+        $callback = new FilesCallback($strings::ERROR_FILE_SIZE_TOO_BIG);
+        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
 
       case UPLOAD_ERR_PARTIAL:
-        // show message box "The file uploading was interrupted"
-        return null;
+        $callback = new FilesCallback($strings::ERROR_INTERRUPTED);
+        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
 
       default:
-        // show message box "Server side error occurred"
-        return null;
+        $callback = new FilesCallback($strings::ERROR_SERVER_FAILURE);
+        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
     }
 
     if ($file->PostedSize != $file->RealSize) {
-      // show message box "The uploaded file was damaged"
-      return null;
+      $callback = new FilesCallback($strings::ERROR_FILE_CORRUPTED);
+      return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
     }
 
     $model = new FilesModel($context);
@@ -134,6 +188,42 @@ class FilesController extends Controller {
     $saveRequest->ContentType = $file->Type;
     $saveRequest->UploadedPath = $file->Path;
     $result = $model->SaveFile($saveRequest);
+
+    switch ($result) {
+      case FileOperationResult::OPERATION_SUCCEEDED:
+        break;
+
+      case FileOperationResult::ERROR_FILE_NAME_EMPTY:
+        $callback = new FilesCallback($strings::ERROR_FILE_NAME_EMPTY);
+        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+
+      case FileOperationResult::ERROR_FILE_NAME_TOO_LONG:
+        $callback = new FilesCallback(sprintf($strings::ERROR_FILE_NAME_TOO_LONG, FileEntity::MAX_NAME_LENGTH));
+        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+
+      case FileOperationResult::ERROR_FILE_SIZE_TOO_BIG:
+        $callback = new FilesCallback($strings::ERROR_FILE_SIZE_TOO_BIG);
+        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+
+      case FileOperationResult::ERROR_FILE_NAME_WRONG:
+        $callback = new FilesCallback($strings::ERROR_FILE_NAME_WRONG);
+        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+
+      case FileOperationResult::ERROR_FILES_LIMIT_EXCEEDED:
+        $callback = new FilesCallback(sprintf($strings::ERROR_LIMIT_EXCEEDED, Settings::MAX_FILES_PER_USER));
+        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+
+      case FileOperationResult::ERROR_SERVER_FAILURE:
+        $callback = new FilesCallback($strings::ERROR_SERVER_FAILURE);
+        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+
+      case FileOperationResult::ERROR_USER_DOES_NOT_EXISTS:
+        $callback = new FilesCallback($strings::ERROR_UNKNOWN_USER);
+        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+
+      default:
+        throw new LogicException('Unexpected error code');
+    }
 
     return new Request($request->Language, Application::DEFAULT_CONTROLLER, 'Index');
   }

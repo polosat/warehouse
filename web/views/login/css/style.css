@@ -2,11 +2,15 @@
   width: 300px;
 }
 
+#login_form .frame-header {
+  margin-bottom: 15px;
+}
+
 #login,
 #password {
   width: 290px;
 }
 
 #button_line {
-  margin: 20px 0 20px 0;
+  margin: 20px 0 10px;
 }

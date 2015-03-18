@@ -1,14 +1,8 @@
-<?php
-/** @var NotFoundViewStrings $strings */
-/** @var string $language */
-$homeLink = '<a href="/' . $language .'">' . $strings::TEXT_START . '</a>';
-$pageText = sprintf($strings::PAGE_TEXT, $homeLink);
-?>
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title><?=$strings::PAGE_TITLE?></title>
+  <title>500: Server error</title>
   <style>
     .banner {
       width: 500px;
@@ -25,8 +19,8 @@ $pageText = sprintf($strings::PAGE_TEXT, $homeLink);
 </head>
 <body>
   <div class="banner">
-    <h1><?=$strings::PAGE_TITLE?></h1>
-    <?=$pageText?>
+    <h1>500: Server error</h1>
+    Unrecoverable server side error.
   </div>
 </body>
 </html>

@@ -1,6 +1,6 @@
 <?php
 class Model {
-  const SQL_ER_DUP_ENTRY = "23000";
+  const SQL_INTEGRITY_ERROR = "23000";
 
   private $dbh;
   private $dsn;

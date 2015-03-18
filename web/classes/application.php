@@ -4,11 +4,13 @@ require_once __DIR__ . '/request.php';
 require_once __DIR__ . '/context.php';
 require_once __DIR__ . '/controller.php';
 require_once __DIR__ . '/../views/404/view.php';
+require_once __DIR__ . '/../views/500/view.php';
 
 class Application {
   const LOGIN_CONTROLLER    = 'login';
   const PROFILE_CONTROLLER  = 'profile';
-  const DEFAULT_CONTROLLER  = 'files';
+  const FILES_CONTROLLER    = 'files';
+  const DEFAULT_CONTROLLER  = self::FILES_CONTROLLER;
 
   const URI_LOGIN       = '/login';
   const URI_LOGOUT      = '/login/logout';
@@ -32,8 +34,8 @@ class Application {
       self::$instance->RouteRequest();
     }
     catch (Exception $e) {
-      //TODO: Log the error here
-      throw $e;
+      // Log the exception here
+      self::Show500();
     }
   }
 
@@ -89,5 +91,10 @@ class Application {
   protected function Show404($language) {
     header('X-PHP-Response-Code: 404', true, 404);
     NotFoundView::Render($language);
+  }
+
+  static protected function Show500() {
+    header('X-PHP-Response-Code: 500', true, 500);
+    ServerErrorView::Render();
   }
 }

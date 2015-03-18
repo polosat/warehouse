@@ -6,8 +6,8 @@ $strings = $this->ProfileStrings;
 $birthdayFormatted = $this->FormatBirthday();
 ?>
 <div id="user_form" class="frame">
-  <h1><?=html($user->FirstName)?> <?=html($user->LastName)?></h1>
-  <table>
+  <div class="frame-header"><?=html($user->FirstName)?> <?=html($user->LastName)?></div>
+  <table id="info_table">
     <tr>
       <td class="user-view-label"><?=$strings::LABEL_LOGIN?>: </td>
       <td><?=html($user->Login)?></td>
@@ -33,6 +33,6 @@ $birthdayFormatted = $this->FormatBirthday();
   </table>
   <hr/>
   <div id="button_line">
-    <input type="button" class="button" onclick="navigate('<?=$bag->EditUri?>')" value="<?=$strings::LABEL_EDIT?>">
+    <input type="button" name="edit_button" class="button" onclick="navigate('<?=$bag->EditUri?>')" value="<?=$strings::LABEL_EDIT?>">
   </div>
 </div>

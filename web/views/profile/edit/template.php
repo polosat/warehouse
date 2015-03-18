@@ -8,7 +8,7 @@ $existingUser = isset($user->UserID);
 $submitName = $existingUser ? $strings::BUTTON_CHANGE : $strings::BUTTON_REGISTER;
 ?>
 <div id="profile_form" class="frame input-form">
-  <h1><?=$strings::FORM_TITLE?></h1>
+  <div class="frame-header"><?=$strings::FORM_TITLE?></div>
   <form action="" method="post">
     <label for="login"><?=$strings::LABEL_LOGIN?><span class="text-red"> *</span></label>
     <input id="login" name="<?=EditProfileView::FIELD_NAME_LOGIN?>" type="text" value="<?=html($user->Login)?>" maxlength="<?=UserEntity::LOGIN_MAX_LENGTH?>" />
@@ -69,7 +69,7 @@ $submitName = $existingUser ? $strings::BUTTON_CHANGE : $strings::BUTTON_REGISTE
 <?php if (isset($bag->ValidationErrors[EditProfileView::FIELD_NAME_EMAIL])): ?>
     <div class="input-error"><?=$bag->ValidationErrors[EditProfileView::FIELD_NAME_EMAIL]?></div>
 <?php endif ?>
-    <hr/>
+    <hr id="bottom_hr"/>
     <div class="text-11 input-hint"><span class="text-red">*</span> <?=$strings::HINT_MANDATORY?></div>
     <div id="button_line">
       <input id="submit" class="button" type="submit" value="<?=$submitName?>">

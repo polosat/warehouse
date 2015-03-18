@@ -3,7 +3,9 @@ require_once __DIR__ . '/bag.php';
 require_once __DIR__ . '/strings.php';
 
 class FilesView extends LayoutView {
-  const FIELD_NAME_USER_FILE  = 'userFile';
+  const FIELD_NAME_UPLOADED_FILE  = 'uploaded_file';
+  const FIELD_NAME_SELECTED_FILE  = 'selected_file';
+
   const MINIMUM_FILE_ROWS     = 12;
 
   public $FilesStrings;
@@ -24,14 +26,10 @@ class FilesView extends LayoutView {
     $this->MessageBoxRequired = true;
     $this->HeaderTitle = $strings::HEADER_TITLE;
     $this->Stylesheets[] = '/views/files/css/style.css';
+    $this->Scripts[] = '/views/files/scripts/script.js';
   }
 
   protected function RenderBody() {
     require 'template.php';
-  }
-
-  protected function FormatSize($bytes) {
-    $strings = $this->LayoutStrings;
-    return $bytes < 1024 ? $bytes : (ceil($bytes / 1024) . ' ' . $strings::UNIT_KILOBYTES);
   }
 }

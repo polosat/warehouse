@@ -4,7 +4,7 @@ body {
   padding: 0 0 100px;
   height: 100%;
   font: normal 13px Arial, Verdana, sans-serif;
-  background-image: url("/views/layout/img/desktop.png");
+  background: url("/views/layout/img/desktop.png") #D2D0D0;
 }
 
 form {
@@ -104,16 +104,16 @@ form {
   background-color: #FFFFFF;
   border: 1px solid #A0A0A0;
   margin: 40px auto 0;
-  padding: 0 30px;
+  padding: 10px 30px;
   display: block;
   width: 600px;
 }
 
-.frame h1 {
+.frame-header {
   color: #606060;
-  margin: 20px 0;
-  padding: 0 0 10px;
   border-bottom: 1px solid #D0D0D0;
+  height: 40px;
+  line-height: 38px;
   font-size: 20px;
   font-weight: 200;
 }
@@ -126,7 +126,7 @@ form {
   border-top: 1px solid #D0D0D0;
   color: #FFFFFF;
   background-color: #FFFFFF;
-  margin-top: 20px;
+  padding: 0;
 }
 
 .input-form
@@ -167,7 +167,7 @@ input[type=password]:focus {
 
 /******************* Common elements ***************************/
 .text-red {
-  color: #FF0000;
+  color: #FF0000 !important;
 }
 
 .text-11 {

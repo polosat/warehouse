@@ -3,8 +3,17 @@
   padding: 0 15px 15px;
 }
 
-#files_frame h1 {
-  margin-bottom: 4px;
+#files_frame .frame-header {
+  margin: 10px 0 4px;
+}
+
+#header_title {
+  float: left;
+}
+
+#header_total {
+  float: right;
+  font-size: 11px;
 }
 
 #toolbar {
@@ -102,6 +111,11 @@
   height: 23px;
   border: 1px solid #FFFFFF;
   vertical-align: middle;
+  float: left;
+}
+
+.tb-right-stub {
+  clear: both;
 }
 
 .tb-button-enabled:hover {
@@ -128,11 +142,11 @@
   display: inline-block;
   *display: inline;
   zoom: 1;
-  color: #808080;
-  width: 638px;
-  text-align: right;
+  color: #606060;
   vertical-align: middle;
   font-size: 11px;
+  line-height: 24px;
+  float: right;
 }
 
 .file-input {

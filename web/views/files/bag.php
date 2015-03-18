@@ -2,6 +2,8 @@
 class FilesViewBag {
   /** @var FileViewItem[] */
   public $Files = array();
+  public $TotalSize;
+  public $UploadUri;
   public $DeleteUri;
 }
 

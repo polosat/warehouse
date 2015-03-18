@@ -3,6 +3,10 @@
   font-size: 16px;
 }
 
+#user_form .frame-header {
+  margin-bottom: 10px;
+}
+
 #user_form .user-view-label {
   text-align: right;
   padding: 6px 20px 6px 0;
@@ -14,7 +18,11 @@
   margin: 12px;
 }
 
+#info_table {
+  margin-bottom: 15px;
+}
+
 #button_line {
-  margin: 20px 0 20px 0;
+  margin: 20px 0 10px;
   text-align: center;
 }

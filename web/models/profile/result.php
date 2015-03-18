@@ -1,7 +1,5 @@
 <?php
-require_once __DIR__ . '/../../classes/result.php';
-
-class ProfileOperationResult extends ModelOperationResult {
+class ProfileOperationResult {
   const ERROR_INVALID_LOGIN         = 1001;
   const ERROR_INVALID_FIRST_NAME    = 1002;
   const ERROR_INVALID_LAST_NAME     = 1003;
@@ -14,4 +12,18 @@ class ProfileOperationResult extends ModelOperationResult {
   const ERROR_PASSWORDS_MISMATCH    = 1010;
   const ERROR_BAD_CURRENT_PASSWORD  = 1011;
   const ERROR_UNKNOWN_USER_ID       = 1012;
+
+  public $Errors = array();
+
+  public function Succeeded() {
+    return count($this->Errors) == 0;
+  }
+
+  public function Failed() {
+    return count($this->Errors) > 0;
+  }
+
+  public function AddError($errorCode) {
+    $this->Errors[$errorCode] = $errorCode;
+  }
 }

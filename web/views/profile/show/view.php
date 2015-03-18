@@ -35,6 +35,7 @@ class ShowProfileView extends LayoutView {
 
     $this->HeaderTitle = $strings::HEADER_TITLE;
     $this->Stylesheets[] = '/views/profile/show/css/style.css';
+    $this->FocusedElement = 'edit_button';
   }
 
   protected function RenderBody() {

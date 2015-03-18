@@ -4,7 +4,7 @@ $strings = $this->LoginStrings;
 $bag = $this->Bag;
 ?>
 <div id="login_form" class="frame input-form">
-  <h1><?=$strings::TITLE_LOGIN_FORM?></h1>
+  <div class="frame-header"><?=$strings::TITLE_LOGIN_FORM?></div>
 <?php if (isset($bag->ErrorText)): ?>
   <div class="input-error"><?=$bag->ErrorText?></div>
 <?php endif ?>

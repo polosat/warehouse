@@ -3,7 +3,6 @@ require_once __DIR__ . '/user.php';
 require_once __DIR__ . '/result.php';
 require_once __DIR__ . '/../../classes/utils.php';
 require_once __DIR__ . '/../../classes/hash.php';
-require_once __DIR__ . '/../../classes/result.php';
 require_once __DIR__ . '/../../classes/model.php';
 
 class ProfileModel extends Model {
@@ -82,7 +81,7 @@ class ProfileModel extends Model {
         if ($dbh->inTransaction()) {
           $dbh->rollBack();
         }
-        if ($e->getCode() == self::SQL_ER_DUP_ENTRY) {
+        if ($e->getCode() == self::SQL_INTEGRITY_ERROR) {
           $result->AddError(ProfileOperationResult::ERROR_LOGIN_ALREADY_EXISTS);
         }
         else {
@@ -140,7 +139,7 @@ class ProfileModel extends Model {
         if ($dbh->inTransaction()) {
           $dbh->rollBack();
         }
-        if ($e->getCode() == self::SQL_ER_DUP_ENTRY) {
+        if ($e->getCode() == self::SQL_INTEGRITY_ERROR) {
           $result->AddError(ProfileOperationResult::ERROR_LOGIN_ALREADY_EXISTS);
         }
         else {

@@ -1,19 +1,10 @@
 <?php
 require_once __DIR__ . '/file.php';
+require_once __DIR__ . '/result.php';
 require_once __DIR__ . '/../../classes/model.php';
 require_once __DIR__ . '/../../classes/utils.php';
 
 class FilesModel extends Model {
-  const OPERATION_SUCCEEDED         = 0;
-  const ERROR_FILE_SIZE_TOO_BIG     = 1001;
-  const ERROR_FILE_NAME_TOO_LONG    = 1002;
-  const ERROR_FILE_NAME_EMPTY       = 1003;
-  const ERROR_FILE_DOES_NOT_EXISTS  = 1004;
-  const ERROR_USER_DOES_NOT_EXISTS  = 1005;
-  const ERROR_FILES_LIMIT_EXCEEDED  = 1006;
-  const ERROR_CANT_DELETE_FILE      = 1007;
-  const ERROR_SERVER_FAILURE        = 1008;
-
   public function GetUserFiles($userID) {
     $dbh = $this->dbh();
 
@@ -57,8 +48,7 @@ class FilesModel extends Model {
     $deleted = array();
 
     foreach ($files as $fileID) {
-      if (!is_int($fileID))
-        throw new LogicException('A fileID must be an integer.');
+      $fileID = intval($fileID);
 
       $filePath = Settings::STORAGE_PATH . "$fileID.$userID";
       if (@unlink($filePath) || !file_exists($filePath)) {
@@ -98,22 +88,21 @@ class FilesModel extends Model {
     trim_to_null($request->FileName);
 
     if (empty($request->FileName)) {
-      return self::ERROR_FILE_NAME_EMPTY;
+      return FileOperationResult::ERROR_FILE_NAME_EMPTY;
     }
 
     if (mb_strlen($request->FileName) > FileEntity::MAX_NAME_LENGTH) {
-      return self::ERROR_FILE_NAME_TOO_LONG;
+      return FileOperationResult::ERROR_FILE_NAME_TOO_LONG;
     }
 
     $fileSize = filesize($request->UploadedPath);
     if ($fileSize > Settings::MAX_FILE_SIZE) {
-      return self::ERROR_FILE_SIZE_TOO_BIG;
+      return FileOperationResult::ERROR_FILE_SIZE_TOO_BIG;
     }
 
-    //TODO: Check if the file name contains invalid characters. YES, we should do this!
-    // IE supports 147 symbols only?
-    // Quotes should be eliminated.
-    // Implement client-side verification as well
+    if (preg_match(FileEntity::WRONG_NAME_MASK, $request->FileName) === 1) {
+      return FileOperationResult::ERROR_FILE_NAME_WRONG;
+    }
 
     $permanentPath = null;
     $dbh = $this->dbh();
@@ -132,14 +121,14 @@ class FilesModel extends Model {
 
       if ($sth->rowCount() == 0) {
         $dbh->rollBack();
-        return self::ERROR_FILES_LIMIT_EXCEEDED;
+        return FileOperationResult::ERROR_FILES_LIMIT_EXCEEDED;
       }
 
       $fileID = $this->dbh()->lastInsertId();
       $permanentPath = Settings::STORAGE_PATH . "$fileID.$request->UserID";
       if (!@move_uploaded_file($request->UploadedPath, $permanentPath)) {
         $dbh->rollBack();
-        return self::ERROR_SERVER_FAILURE;
+        return FileOperationResult::ERROR_SERVER_FAILURE;
       }
 
       $dbh->commit();
@@ -151,15 +140,15 @@ class FilesModel extends Model {
       if (file_exists($permanentPath)) {
         unlink($permanentPath);
       }
-      if ($e->getCode() == self::SQL_ER_DUP_ENTRY) {
-        return self::ERROR_USER_DOES_NOT_EXISTS;
+      if ($e->getCode() == self::SQL_INTEGRITY_ERROR) {
+        return FileOperationResult::ERROR_USER_DOES_NOT_EXISTS;
       }
       else {
         throw new DatabaseException($e);
       }
     }
 
-    return self::OPERATION_SUCCEEDED;
+    return FileOperationResult::OPERATION_SUCCEEDED;
   }
 
   const QUERY_DELETE_USER_FILES = <<<SQL

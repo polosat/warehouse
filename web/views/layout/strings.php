@@ -14,8 +14,10 @@ class LayoutViewStrings extends Strings {
   const HEADER_ITEM_LOGOUT    = 'logout';
 
   const TIME_FORMAT_H24       = 0;
-  const UNIT_KILOBYTES        = 'KB';
+  const UNIT_GIGABYTES        = 'GB';
   const UNIT_MEGABYTES        = 'MB';
+  const UNIT_KILOBYTES        = 'KB';
+  const UNIT_BYTES            = 'bytes';
   const DECIMAL_POINT         = '.';
 }
 
@@ -27,7 +29,9 @@ class LayoutViewStrings_RU extends LayoutViewStrings {
   const HEADER_ITEM_LOGOUT    = 'выход';
 
   const TIME_FORMAT_H24       = 1;
-  const UNIT_KILOBYTES        = 'КБ';
+  const UNIT_GIGABYTES        = 'ГБ';
   const UNIT_MEGABYTES        = 'МБ';
+  const UNIT_KILOBYTES        = 'КБ';
+  const UNIT_BYTES            = 'байт';
   const DECIMAL_POINT         = ',';
 }

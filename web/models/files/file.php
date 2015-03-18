@@ -1,6 +1,7 @@
 <?php
 class FileEntity {
-  const MAX_NAME_LENGTH = 255;
+  const MAX_NAME_LENGTH = 250;
+  const WRONG_NAME_MASK = '/[\/\\\*\?:\|\"\<\>]+/';
 
   public $FileID;
   public $UserID;

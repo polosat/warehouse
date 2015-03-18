@@ -2,6 +2,10 @@
   width: 400px;
 }
 
+#profile_form .frame-header {
+  margin-bottom: 15px;
+}
+
 #login, #phone, #birthday {
   width: 200px;
 }
@@ -15,6 +19,10 @@
   width: 390px;
 }
 
+#bottom_hr {
+  margin-top: 20px;
+}
+
 #button_line {
-  margin: 15px 0 20px 0;
+  margin: 15px 0 10px;
 }

@@ -21,6 +21,12 @@ abstract class LayoutView {
 
   public $FocusedElement;
 
+  protected $kb;
+  protected $gb;
+  protected $mb;
+  protected $system_point;
+  protected $replace_system_point;
+
   protected function __construct($language) {
     /** @var LayoutViewStrings  $strings */
     /** @var HeaderItem[]       $headerItems */
@@ -39,6 +45,11 @@ abstract class LayoutView {
     $this->Scripts = array();
     $this->HeaderTitle = '';
     $this->Alert = $alert;
+    $this->kb = Settings::SHOW_DECIMAL_SIZE ? 1000 : 1024;
+    $this->mb = $this->kb * $this->kb;
+    $this->gb = $this->mb * $this->kb;
+    $this->system_point = localeconv()['decimal_point'];
+    $this->replace_system_point = ($this->system_point != $strings::DECIMAL_POINT);
   }
 
   public function Render() {
@@ -56,5 +67,27 @@ abstract class LayoutView {
     }
 
     require 'template.php';
+  }
+
+  protected function FormatSize($bytes, $precision = 0, $skipBytesUnits = true) {
+    $strings = $this->LayoutStrings;
+
+    if ($bytes >= $this->gb) {
+      $result = round($bytes / $this->gb, $precision) . ' ' . $strings::UNIT_GIGABYTES;
+    }
+    elseif ($bytes >= $this->mb) {
+      $result = round($bytes / $this->mb, $precision) . ' ' . $strings::UNIT_MEGABYTES;
+    }
+    elseif ($bytes >= $this->kb) {
+      $result = round($bytes / $this->kb, $precision) . ' ' . $strings::UNIT_KILOBYTES;
+    }
+    else {
+      $result = $bytes . ($skipBytesUnits ? '' : (' ' . $strings::UNIT_BYTES));
+    }
+
+    // We do not use number_format() here as we don't need trailing decimal zeroes
+    return ($precision > 0 && $this->replace_system_point) ?
+      str_replace($this->system_point, $strings::DECIMAL_POINT, $result):
+      $result;
   }
 }
