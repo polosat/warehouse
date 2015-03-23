@@ -1,3 +1,7 @@
+html.show-message-box {
+  overflow: hidden;
+}
+
 body.show-message-box {
   overflow: hidden;
   margin: 0;

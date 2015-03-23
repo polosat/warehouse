@@ -1,13 +1,15 @@
 <?php
-require_once __DIR__ . '/../../views/files/view.php';
+require_once __DIR__ . '/../../views/files/index/view.php';
+require_once __DIR__ . '/../../views/files/upload/view.php';
 require_once __DIR__ . '/../../models/files/model.php';
 require_once __DIR__ . '/callback.php';
 
 class FilesController extends Controller {
   const CONTROLLER_NAME = Application::FILES_CONTROLLER;
-  const ACTION_GET      = 'get';
-  const ACTION_NEW      = 'new';
+
+  const ACTION_DOWNLOAD = 'download';
   const ACTION_DELETE   = 'delete';
+  const ACTION_UPLOAD   = 'upload';
 
   protected function Action_Index() {
     $context = $this->context;
@@ -28,9 +30,9 @@ class FilesController extends Controller {
     $model = new FilesModel($context);
     $files = $model->GetUserFiles($userID);
 
-    $bag->UploadUri = Request::CreateUri($language, self::CONTROLLER_NAME, self::ACTION_NEW);
+    $bag->UploadUri = Request::CreateUri($language, self::CONTROLLER_NAME, self::ACTION_UPLOAD);
     $bag->DeleteUri = Request::CreateUri($language, self::CONTROLLER_NAME, self::ACTION_DELETE);
-    $downloadUriBase = Request::CreateUri($language, self::CONTROLLER_NAME, self::ACTION_GET) . '/';
+    $downloadUriBase = Request::CreateUri($language, self::CONTROLLER_NAME, self::ACTION_DOWNLOAD);
 
     $bag->TotalSize = 0;
     foreach ($files as $file) {
@@ -39,7 +41,7 @@ class FilesController extends Controller {
       $item->Name = $file->FileName;
       $item->Size = $file->Size;
       $item->UploadedOn = $this->GetTimestamp($file->UploadedOn);
-      $item->Uri = $downloadUriBase . $file->FileID . '/' . rawurlencode($file->FileName);
+      $item->Uri = $downloadUriBase . '/' . $file->FileID . '/' . rawurlencode($file->FileName);
       $bag->Files[] = $item;
       $bag->TotalSize += $item->Size;
     }
@@ -47,7 +49,7 @@ class FilesController extends Controller {
     $view->Render();
   }
 
-  protected function Action_Get() {
+  protected function Action_Download() {
     $context = $this->context;
     $session = $context->Session;
     $request = $context->Request;
@@ -111,121 +113,141 @@ class FilesController extends Controller {
     return new Request($language, self::CONTROLLER_NAME);
   }
 
-  protected function Action_New() {
+  protected function Action_Upload() {
     $context = $this->context;
     $request = $context->Request;
     $language = $request->Language;
 
-    /** @var FilesViewStrings $strings */
-    $strings = FilesViewStrings::GetInstance($language);
+    $view = new FileUploadView($language);
 
     if ($request->Error == 413) {
+      $strings = $view->FileUploadStrings;
       $callback = new FilesCallback($strings::ERROR_FILE_SIZE_TOO_BIG);
-      return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+      $context->PushCallback($callback);
+      header('Status: 444');
     }
-
-    return new Request($language, self::CONTROLLER_NAME);
+    else {
+      $view->Render();
+    }
   }
 
-  protected function ActionPost_New() {
+  protected function ActionPost_Upload() {
     $context = $this->context;
-    $session = $context->Session;
     $request = $context->Request;
-    $language = $request->Language;
+    $session = $context->Session;
     $files = $request->Files;
 
-    /** @var FilesViewStrings $strings */
-    $strings = FilesViewStrings::GetInstance($language);
-
-    if ($request->Error == 413) {
-      $callback = new FilesCallback($strings::ERROR_FILE_SIZE_TOO_BIG);
-      return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+    try {
+      $operationResult = $this->SaveUploadedFile($session->UserID(), $files);
+    }
+    catch(Exception $e) {
+      // TODO: Log error here
+      $operationResult = FileOperationResult::ERROR_SERVER_FAILURE;
     }
 
+    /** @var FileUploadStrings $strings */
+    $strings = FileUploadStrings::GetInstance($request->Language);
+
+    switch ($operationResult) {
+      case FileOperationResult::OPERATION_SUCCEEDED:
+        return;
+
+      case FileOperationResult::ERROR_SERVER_FAILURE:
+        $alert = $strings::ERROR_SERVER_FAILURE;
+        break;
+
+      case FileOperationResult::ERROR_INVALID_REQUEST:
+        $alert = $strings::ERROR_INVALID_REQUEST;
+        break;
+
+      case FileOperationResult::ERROR_NO_FILE_SELECTED:
+        $alert = $strings::ERROR_NO_FILE_SELECTED;
+        break;
+
+      case FileOperationResult::ERROR_INTERRUPTED:
+        $alert = $strings::ERROR_INTERRUPTED;
+        break;
+
+      case FileOperationResult::ERROR_FILE_CORRUPTED:
+        $alert = $strings::ERROR_FILE_CORRUPTED;
+        break;
+
+      case FileOperationResult::ERROR_UNKNOWN_USER:
+        $alert = $strings::ERROR_UNKNOWN_USER;
+        break;
+
+      case FileOperationResult::ERROR_FILE_SIZE_TOO_BIG:
+        $alert = $strings::ERROR_FILE_SIZE_TOO_BIG;
+        break;
+
+      case FileOperationResult::ERROR_FILE_NAME_TOO_LONG:
+        $alert = sprintf($strings::ERROR_FILE_NAME_TOO_LONG, FileEntity::MAX_NAME_LENGTH);
+        break;
+
+      case FileOperationResult::ERROR_FILE_NAME_EMPTY:
+        $alert = $strings::ERROR_FILE_NAME_EMPTY;
+        break;
+
+      case FileOperationResult::ERROR_FILE_NAME_WRONG:
+        $alert = $strings::ERROR_FILE_NAME_WRONG;
+        break;
+
+      case FileOperationResult::ERROR_FILES_LIMIT_EXCEEDED:
+        $alert = sprintf($strings::ERROR_LIMIT_EXCEEDED, Settings::MAX_FILES_PER_USER);
+        break;
+
+      default:
+        // TODO: Log error here
+        $alert = $strings::ERROR_SERVER_FAILURE;
+    }
+
+    $callback = new FilesCallback($alert);
+    $context->PushCallback($callback);
+  }
+
+  protected function SaveUploadedFile($userID, $files) {
     if (count($files) == 0) {
-      $callback = new FilesCallback($strings::ERROR_NO_FILE_SELECTED);
-      return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+      return FileOperationResult::ERROR_NO_FILE_SELECTED;
     }
 
     if (count($files) != 1 || $files[0]->Field != FilesView::FIELD_NAME_UPLOADED_FILE) {
-      $callback = new FilesCallback($strings::ERROR_INVALID_REQUEST);
-      return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+      return FileOperationResult::ERROR_INVALID_REQUEST;
     }
 
     $file = $files[0];
 
     switch ($file->Error) {
       case UPLOAD_ERR_OK:
+        // Continue upload processing
         break;
 
       case UPLOAD_ERR_NO_FILE:
-        $callback = new FilesCallback($strings::ERROR_NO_FILE_SELECTED);
-        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+        return FileOperationResult::ERROR_NO_FILE_SELECTED;
 
       case UPLOAD_ERR_INI_SIZE:
       case UPLOAD_ERR_FORM_SIZE:
-        $callback = new FilesCallback($strings::ERROR_FILE_SIZE_TOO_BIG);
-        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+        return FileOperationResult::ERROR_FILE_SIZE_TOO_BIG;
 
       case UPLOAD_ERR_PARTIAL:
-        $callback = new FilesCallback($strings::ERROR_INTERRUPTED);
-        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+        return FileOperationResult::ERROR_INTERRUPTED;
 
       default:
-        $callback = new FilesCallback($strings::ERROR_SERVER_FAILURE);
-        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+        return FileOperationResult::ERROR_SERVER_FAILURE;
     }
 
     if ($file->PostedSize != $file->RealSize) {
-      $callback = new FilesCallback($strings::ERROR_FILE_CORRUPTED);
-      return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
+      return FileOperationResult::ERROR_FILE_CORRUPTED;
     }
 
-    $model = new FilesModel($context);
+    $model = new FilesModel();
     $saveRequest = new FileSaveRequest();
-    $saveRequest->UserID = $session->UserID();
+    $saveRequest->UserID = $userID;
     $saveRequest->FileName = $file->Name;
     $saveRequest->ContentType = $file->Type;
     $saveRequest->UploadedPath = $file->Path;
     $result = $model->SaveFile($saveRequest);
 
-    switch ($result) {
-      case FileOperationResult::OPERATION_SUCCEEDED:
-        break;
-
-      case FileOperationResult::ERROR_FILE_NAME_EMPTY:
-        $callback = new FilesCallback($strings::ERROR_FILE_NAME_EMPTY);
-        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
-
-      case FileOperationResult::ERROR_FILE_NAME_TOO_LONG:
-        $callback = new FilesCallback(sprintf($strings::ERROR_FILE_NAME_TOO_LONG, FileEntity::MAX_NAME_LENGTH));
-        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
-
-      case FileOperationResult::ERROR_FILE_SIZE_TOO_BIG:
-        $callback = new FilesCallback($strings::ERROR_FILE_SIZE_TOO_BIG);
-        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
-
-      case FileOperationResult::ERROR_FILE_NAME_WRONG:
-        $callback = new FilesCallback($strings::ERROR_FILE_NAME_WRONG);
-        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
-
-      case FileOperationResult::ERROR_FILES_LIMIT_EXCEEDED:
-        $callback = new FilesCallback(sprintf($strings::ERROR_LIMIT_EXCEEDED, Settings::MAX_FILES_PER_USER));
-        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
-
-      case FileOperationResult::ERROR_SERVER_FAILURE:
-        $callback = new FilesCallback($strings::ERROR_SERVER_FAILURE);
-        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
-
-      case FileOperationResult::ERROR_USER_DOES_NOT_EXISTS:
-        $callback = new FilesCallback($strings::ERROR_UNKNOWN_USER);
-        return $this->CreateCallbackRequest($callback, self::CONTROLLER_NAME);
-
-      default:
-        throw new LogicException('Unexpected error code');
-    }
-
-    return new Request($request->Language, Application::DEFAULT_CONTROLLER, 'Index');
+    return $result;
   }
 
   protected function GetTimestamp($dateTimeString) {

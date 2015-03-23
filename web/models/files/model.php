@@ -141,7 +141,7 @@ class FilesModel extends Model {
         unlink($permanentPath);
       }
       if ($e->getCode() == self::SQL_INTEGRITY_ERROR) {
-        return FileOperationResult::ERROR_USER_DOES_NOT_EXISTS;
+        return FileOperationResult::ERROR_UNKNOWN_USER;
       }
       else {
         throw new DatabaseException($e);

@@ -39,6 +39,7 @@ function MessageBox(buttons) {
     button.style.display = 'none';
     button.onclick = function() {
       removeClass(self.bodyElement, 'show-message-box');
+      removeClass(self.htmlElement, 'show-message-box');
       self.text.innerHTML = '';
       if (self.onClose) {
         self.onClose(code);

@@ -8,12 +8,29 @@
 }
 
 #header_title {
+  line-height: 38px;
   float: left;
 }
 
-#header_total {
+#header_total,
+#header_progress {
+  line-height: 38px;
   float: right;
   font-size: 11px;
+}
+
+#header_progress {
+  display: none;
+}
+
+#image_spin {
+  width: 16px;
+  height: 16px;
+  padding: 11px 0;
+}
+
+#header_progress * {
+  vertical-align: middle;
 }
 
 #toolbar {
@@ -118,24 +135,25 @@
   clear: both;
 }
 
-.tb-button-enabled:hover {
+.tb-button-enabled:hover,
+.tb-button-enabled.hover {
   border: 1px solid #C0CCFF;
 }
 
 #tb_upload_file {
-  background: url("/views/files/img/upload-disabled.png") 1px 1px no-repeat;
+  background: url("/views/files/index/img/upload-disabled.png") 1px 1px no-repeat;
 }
 
 #tb_upload_file.tb-button-enabled {
-  background: url("/views/files/img/upload.png") 1px 1px no-repeat;
+  background: url("/views/files/index/img/upload.png") 1px 1px no-repeat;
 }
 
 #tb_delete_file {
-  background: url("/views/files/img/trash-disabled.png") 1px 1px no-repeat;
+  background: url("/views/files/index/img/trash-disabled.png") 1px 1px no-repeat;
 }
 
 #tb_delete_file.tb-button-enabled {
-  background: url("/views/files/img/trash.png") 1px 1px no-repeat;
+  background: url("/views/files/index/img/trash.png") 1px 1px no-repeat;
 }
 
 #tb_hint {
@@ -149,20 +167,6 @@
   float: right;
 }
 
-.file-input {
-  position: relative;
-  top: 0;
-  left: -10px;
-  width: 35px;
-  height: 21px;
-  filter:alpha(opacity=0);
-  opacity: 0;
-  margin: 0;
-  padding: 0;
-  font-size: 16px;
-  /*cursor: pointer;*/
-}
-
 .file-input-wrapper {
   position: relative;
   left: 0;
@@ -170,4 +174,9 @@
   width: 23px;
   height: 23px;
   overflow: hidden;
+}
+
+#upload_frame {
+  filter: alpha(opacity=0);
+  opacity: 0;
 }

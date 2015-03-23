@@ -44,6 +44,10 @@ function removeClass(element, className) {
   }
 }
 
+function hasClass(element, className) {
+  return ((" " + element.className + " ").replace(/[\n\t\r]/g, " ").indexOf(" " + className + " ") > -1);
+}
+
 function formatDateTime(elementID, timestamp, h24) {
   var now = new Date();
   var date = new Date(timestamp * 1000);
@@ -70,6 +74,21 @@ function formatDateTime(elementID, timestamp, h24) {
 
 function withZero(number) {
   return (number > 9) ? number : ('0' + number);
+}
+
+function formatTimeInterval(seconds) {
+  var hs = seconds % 3600;
+  var s = seconds % 60;
+  var m = (hs - s) / 60;
+  var h = (seconds - hs) / 3600;
+
+  var ss = '0' + s;
+  ss = ss.substr(ss.length - 2);
+  if (h > 0) {
+    var mm = '0' + m;
+    return h + ':' + mm.substr(mm.length - 2) + ':' + ss;
+  }
+  return m + ':' + ss;
 }
 
 if(typeof String.prototype.trim !== 'function') {

@@ -6,10 +6,11 @@ class FilesView extends LayoutView {
   const FIELD_NAME_UPLOADED_FILE  = 'uploaded_file';
   const FIELD_NAME_SELECTED_FILE  = 'selected_file';
 
-  const MINIMUM_FILE_ROWS     = 12;
+  const MINIMUM_FILE_ROWS = 12;
 
   public $FilesStrings;
   public $Bag;
+  public $UploadStylesheet;
 
   public function __construct(FilesViewBag $bag, $language) {
     /** @var FilesViewStrings $strings */
@@ -25,8 +26,9 @@ class FilesView extends LayoutView {
 
     $this->MessageBoxRequired = true;
     $this->HeaderTitle = $strings::HEADER_TITLE;
-    $this->Stylesheets[] = '/views/files/css/style.css';
-    $this->Scripts[] = '/views/files/scripts/script.js';
+    $this->Stylesheets[] = '/views/files/index/css/style.css';
+    $this->Scripts[] = '/views/files/index/scripts/script.js';
+    $this->UploadStylesheet = '/views/files/index/css/upload.css?' . Settings::VERSION;
   }
 
   protected function RenderBody() {

@@ -3,26 +3,31 @@
 $bag = $this->Bag;
 $strings = $this->FilesStrings;
 $layoutStrings = $this->LayoutStrings;
-$files = $this->Bag->Files;
+
+$files = $bag->Files;
 $filesCount = count($files);
 $uploadAllowed = $filesCount < Settings::MAX_FILES_PER_USER;
+
 $totalText = $filesCount ? $strings::LABEL_TOTAL . ': ' . $filesCount . ' (' . $this->FormatSize($bag->TotalSize, 1, false) . ')' : '';
-$uploadHint = $uploadAllowed ? $strings::HINT_UPLOAD_NEW : $strings::HINT_LIMIT_REACHED;
+$hintUpload = $uploadAllowed ? $strings::HINT_UPLOAD_NEW : $strings::HINT_LIMIT_REACHED;
 $rules = $uploadAllowed ?
   sprintf($strings::HINT_RULES, Settings::MAX_FILES_PER_USER, $this->FormatSize(Settings::MAX_FILE_SIZE, 1, false)):
   $strings::HINT_LIMIT_REACHED;
 ?>
 <div id="files_frame" class="frame">
   <div class="frame-header">
-    <span id="header_title"><?=$strings::FORM_TITLE?></span>
-    <span id="header_total"><?=$totalText?></span>
+    <div id="header_title"><?=$strings::FORM_TITLE?></div>
+    <div id="header_total"><?=$totalText?></div>
+    <div id="header_progress">
+      <img id="image_spin" src="/views/files/index/img/spin.gif">
+      <span><?=$strings::LABEL_UPLOADING?></span>
+      <span id="upload_timer">(0:00)</span>
+    </div>
   </div>
   <div id="toolbar">
-    <div id="tb_upload_file" class="tb-button <?php $uploadAllowed && print("tb-button-enabled")?> file-input-wrapper" title="<?=$uploadHint?>">
+    <div id="tb_upload_file" class="tb-button file-input-wrapper" title="<?=$hintUpload?>">
 <?php if ($uploadAllowed): ?>
-      <form id="upload_form" action="<?=$bag->UploadUri?>" method="post" enctype="multipart/form-data">
-        <input id="upload_button" class="file-input" type="file" title="<?=$uploadHint?>" name="<?=FilesView::FIELD_NAME_UPLOADED_FILE?>">
-      </form>
+      <iframe id="upload_frame" src="<?=$bag->UploadUri?>" frameBorder="0" scrolling="no" onload="filesView.onUploadFrameReady(this)"></iframe>
 <?php endif ?>
     </div><div id="tb_delete_file" class="tb-button">
     </div><div id="tb_hint"<?php $uploadAllowed || print(' class="text-red"')?>>
@@ -30,7 +35,6 @@ $rules = $uploadAllowed ?
     </div><div class="tb-right-stub">
     </div>
   </div>
-
   <div id="files_table">
     <div class="files-row files-header">
       <div class="column column-first">
@@ -68,12 +72,13 @@ $rules = $uploadAllowed ?
     </form>
   </div>
   <script type="text/javascript">
-    InitializeFileView(
-      '<?=FilesView::FIELD_NAME_SELECTED_FILE?>[]',
-      '<?=$strings::ALERT_DELETE_FILES?>',
-      '<?=$strings::ALERT_DELETE_FILE?>',
-      '<?=$strings::HINT_DELETE_SELECTED?>',
-      '<?=$strings::HINT_NOTHING_DELETE?>'
+    filesView.initialize(
+      '<?=FilesView::FIELD_NAME_SELECTED_FILE?>[]', [
+        '<?=$strings::ALERT_DELETE_FILES?>',
+        '<?=$strings::ALERT_DELETE_FILE?>',
+        '<?=$strings::HINT_DELETE_SELECTED?>',
+        '<?=$strings::HINT_NOTHING_DELETE?>'
+      ]
     );
   </script>
 </div>
