@@ -96,3 +96,38 @@ if(typeof String.prototype.trim !== 'function') {
     return this.replace(/^\s+|\s+$/g, '');
   }
 }
+
+function XmlHttpObject(callback) {
+  var xmlHttpProviders = [
+    function() { return new XMLHttpRequest() },
+    function() { return new ActiveXObject("Msxml2.XMLHTTP") },
+    function() { return new ActiveXObject("Msxml3.XMLHTTP") },
+    function() { return new ActiveXObject("Microsoft.XMLHTTP") }
+  ];
+  var self = this;
+  var xhr = false;
+
+  this.onreadystatechange = function() {
+    if (xhr.readyState == 4) {
+      callback(self);
+    }
+  };
+
+  for (var i = 0, count = xmlHttpProviders.length; i < count; i++) {
+    try {
+      xhr = xmlHttpProviders[i]();
+    }
+    catch (e) {
+      continue;
+    }
+    break;
+  }
+
+  this.xhr = xhr;
+}
+
+XmlHttpObject.prototype.send = function(url) {
+  this.xhr.open('GET', url, true);
+  this.xhr.onreadystatechange = this.onreadystatechange;
+  this.xhr.send(null);
+};

@@ -26,7 +26,7 @@ class FileUploadStrings_RU extends FileUploadStrings {
   const ERROR_SERVER_FAILURE      = 'Ошибка сервера.';
   const ERROR_FILE_NAME_EMPTY     = 'Необходимо указать имя файла.';
   const ERROR_FILE_NAME_TOO_LONG  = 'Имя файла не должно состоять более чем из %d символов.';
-  const ERROR_FILE_NAME_WRONG     = 'Имя файла не должно содержать ни один из следующих символов : \\ / * ? : | " < >';
+  const ERROR_FILE_NAME_WRONG     = 'Имя файла не должно содержать следующие символы: \\ / * ? : | " < >';
   const ERROR_LIMIT_EXCEEDED      = 'Вы не можете загрузить более чем %d файлов.';
   const ERROR_UNKNOWN_USER        = 'Пользователь не существует.';
 }

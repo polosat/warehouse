@@ -73,13 +73,13 @@ abstract class LayoutView {
     $strings = $this->LayoutStrings;
 
     if ($bytes >= $this->gb) {
-      $result = round($bytes / $this->gb, $precision) . ' ' . $strings::UNIT_GIGABYTES;
+      $result = round_or_floor($bytes / $this->gb, $precision) . ' ' . $strings::UNIT_GIGABYTES;
     }
     elseif ($bytes >= $this->mb) {
-      $result = round($bytes / $this->mb, $precision) . ' ' . $strings::UNIT_MEGABYTES;
+      $result = round_or_floor($bytes / $this->mb, $precision) . ' ' . $strings::UNIT_MEGABYTES;
     }
     elseif ($bytes >= $this->kb) {
-      $result = round($bytes / $this->kb, $precision) . ' ' . $strings::UNIT_KILOBYTES;
+      $result = round_or_floor($bytes / $this->kb, $precision) . ' ' . $strings::UNIT_KILOBYTES;
     }
     else {
       $result = $bytes . ($skipBytesUnits ? '' : (' ' . $strings::UNIT_BYTES));

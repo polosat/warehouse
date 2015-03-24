@@ -4,6 +4,8 @@ class UserEntity {
   const LAST_NAME_MAX_LENGTH        = 255;
   const LOGIN_MAX_LENGTH            = 32;
   const PASSWORD_MAX_LENGTH         = 64;
+//  const PASSWORD_MIN_LENGTH         = 1;
+//  const PASSWORD_PATTERN            = '/.*/';
   const PASSWORD_MIN_LENGTH         = 8;
   const PASSWORD_PATTERN            = '/(?=.*\d)(?=.*[A-Z])/';
   const EMAIL_MAX_LENGTH            = 255;

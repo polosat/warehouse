@@ -13,6 +13,10 @@ function trim_to_null(&$string, $trim = true) {
   }
 }
 
+function round_or_floor($number, $precision) {
+  return $precision ? round($number) : floor($number);
+}
+
 function parse_date_time($string, $format, DateTimeZone $timeZone = null) {
   if (!is_string($string) || !is_string($format))
     return false;
