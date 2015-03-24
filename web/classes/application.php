@@ -34,7 +34,7 @@ class Application {
       self::$instance->RouteRequest();
     }
     catch (Exception $e) {
-      // Log the exception here
+      error_log($e->getMessage());
       self::Show500();
     }
   }

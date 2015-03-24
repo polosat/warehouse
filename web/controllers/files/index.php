@@ -131,9 +131,6 @@ class FilesController extends Controller {
     }
   }
 
-  // TODO: The problem is that if error is occurred during a file upload we're not able to detect it (i.e. network errors)
-  // So, we should analyse upload response from the server and if error is occurred (we read an error from the response, or javascript exception was thrown)
-  // we should process it
   protected function ActionPost_Upload() {
     $context = $this->context;
     $request = $context->Request;
@@ -144,7 +141,7 @@ class FilesController extends Controller {
       $operationResult = $this->SaveUploadedFile($session->UserID(), $files);
     }
     catch(Exception $e) {
-      // TODO: Log error here
+      error_log($e->getMessage());
       $operationResult = FileOperationResult::ERROR_SERVER_FAILURE;
     }
 
@@ -200,7 +197,6 @@ class FilesController extends Controller {
         break;
 
       default:
-        // TODO: Log error here
         $alert = $strings::ERROR_SERVER_FAILURE;
     }
 
