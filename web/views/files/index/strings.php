@@ -22,6 +22,7 @@ class FilesViewStrings extends Strings {
   const ERROR_FILE_NOT_FOUND      = 'File not found.';
   const ERROR_DELETE_FILE         = 'Can not delete the selected file. Please try later.';
   const ERROR_DELETE_FILES        = 'Can not delete one or more selected files. Please try later.';
+  const ERROR_UPLOAD_ERROR        = 'An error occurred during the file upload.';
 }
 
 class FilesViewStrings_RU extends FilesViewStrings {
@@ -47,4 +48,5 @@ class FilesViewStrings_RU extends FilesViewStrings {
   const ERROR_FILE_NOT_FOUND      = 'Файл не найден.';
   const ERROR_DELETE_FILE         = 'Не удалось удалить выбранный файл. Попробуйте позже.';
   const ERROR_DELETE_FILES        = 'Не удалось удалить некоторые из выбранных файлов. Попробуйте позже.';
+  const ERROR_UPLOAD_ERROR        = 'Произошла ошибка во время загрузки файла.';
 }

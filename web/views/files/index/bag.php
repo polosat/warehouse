@@ -5,6 +5,7 @@ class FilesViewBag {
   public $TotalSize;
   public $UploadUri;
   public $DeleteUri;
+  public $StatusUri;
 }
 
 class FileViewItem {

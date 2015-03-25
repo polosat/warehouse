@@ -4,7 +4,6 @@ require_once __DIR__ . '/request.php';
 require_once __DIR__ . '/context.php';
 require_once __DIR__ . '/controller.php';
 require_once __DIR__ . '/../views/404/view.php';
-require_once __DIR__ . '/../views/500/view.php';
 
 class Application {
   const LOGIN_CONTROLLER    = 'login';
@@ -95,6 +94,6 @@ class Application {
 
   static protected function Show500() {
     header('X-PHP-Response-Code: 500', true, 500);
-    ServerErrorView::Render();
+    require __DIR__ . '/../views/500/500.html';
   }
 }

@@ -13,7 +13,11 @@ class FileUploadView {
     $this->FileUploadStrings = $strings;
   }
 
-  public function Render() {
-    require __DIR__ . '/template.php';
+  public function RenderForm() {
+    require __DIR__ . '/form.php';
+  }
+
+  public function RenderResult() {
+    require __DIR__ . '/result.php';
   }
 }

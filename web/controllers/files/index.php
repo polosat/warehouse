@@ -10,6 +10,9 @@ class FilesController extends Controller {
   const ACTION_DOWNLOAD = 'download';
   const ACTION_DELETE   = 'delete';
   const ACTION_UPLOAD   = 'upload';
+  const ACTION_STATUS   = 'status';
+
+  const SESSION_KEY_UPLOADS = 'uploads';
 
   protected function Action_Index() {
     $context = $this->context;
@@ -30,7 +33,9 @@ class FilesController extends Controller {
     $model = new FilesModel($context);
     $files = $model->GetUserFiles($userID);
 
-    $bag->UploadUri = Request::CreateUri($language, self::CONTROLLER_NAME, self::ACTION_UPLOAD);
+    $uploadID = uniqid();
+    $bag->UploadUri = Request::CreateUri($language, self::CONTROLLER_NAME, self::ACTION_UPLOAD, $uploadID);
+    $bag->StatusUri = Request::CreateUri($language, self::CONTROLLER_NAME, self::ACTION_STATUS, $uploadID);
     $bag->DeleteUri = Request::CreateUri($language, self::CONTROLLER_NAME, self::ACTION_DELETE);
     $downloadUriBase = Request::CreateUri($language, self::CONTROLLER_NAME, self::ACTION_DOWNLOAD);
 
@@ -54,6 +59,7 @@ class FilesController extends Controller {
     $session = $context->Session;
     $request = $context->Request;
     $language = $request->Language;
+
     /** @var FilesViewStrings $strings */
     $strings = FilesViewStrings::GetInstance($language);
 
@@ -116,18 +122,16 @@ class FilesController extends Controller {
   protected function Action_Upload() {
     $context = $this->context;
     $request = $context->Request;
-    $language = $request->Language;
-
-    $view = new FileUploadView($language);
+    $session = $context->Session;
 
     if ($request->Error == 413) {
-      $strings = $view->FileUploadStrings;
-      $callback = new FilesCallback($strings::ERROR_FILE_SIZE_TOO_BIG);
-      $context->PushCallback($callback);
+      $uploadID = $this->GetUploadID($request);
+      $session->SetArrayValue(self::SESSION_KEY_UPLOADS, $uploadID, FileOperationResult::ERROR_FILE_SIZE_TOO_BIG);
       header('Status: 444');
     }
     else {
-      $view->Render();
+      $view = new FileUploadView($request->Language);
+      $view->RenderForm();
     }
   }
 
@@ -145,63 +149,29 @@ class FilesController extends Controller {
       $operationResult = FileOperationResult::ERROR_SERVER_FAILURE;
     }
 
-    /** @var FileUploadStrings $strings */
-    $strings = FileUploadStrings::GetInstance($request->Language);
+    $view = new FileUploadView($request->Language);
+    $view->StatusMessage = $this->GetResultStatusText($operationResult, $view->FileUploadStrings);
+    $view->RenderResult();
+  }
 
-    switch ($operationResult) {
-      case FileOperationResult::OPERATION_SUCCEEDED:
-        return;
+  protected function Action_Status() {
+    $context = $this->context;
+    $request = $context->Request;
+    $session = $context->Session;
 
-      case FileOperationResult::ERROR_SERVER_FAILURE:
-        $alert = $strings::ERROR_SERVER_FAILURE;
-        break;
+    $uploadID = $this->GetUploadID($request);
+    $statusText = '';
 
-      case FileOperationResult::ERROR_INVALID_REQUEST:
-        $alert = $strings::ERROR_INVALID_REQUEST;
-        break;
-
-      case FileOperationResult::ERROR_NO_FILE_SELECTED:
-        $alert = $strings::ERROR_NO_FILE_SELECTED;
-        break;
-
-      case FileOperationResult::ERROR_INTERRUPTED:
-        $alert = $strings::ERROR_INTERRUPTED;
-        break;
-
-      case FileOperationResult::ERROR_FILE_CORRUPTED:
-        $alert = $strings::ERROR_FILE_CORRUPTED;
-        break;
-
-      case FileOperationResult::ERROR_UNKNOWN_USER:
-        $alert = $strings::ERROR_UNKNOWN_USER;
-        break;
-
-      case FileOperationResult::ERROR_FILE_SIZE_TOO_BIG:
-        $alert = $strings::ERROR_FILE_SIZE_TOO_BIG;
-        break;
-
-      case FileOperationResult::ERROR_FILE_NAME_TOO_LONG:
-        $alert = sprintf($strings::ERROR_FILE_NAME_TOO_LONG, FileEntity::MAX_NAME_LENGTH);
-        break;
-
-      case FileOperationResult::ERROR_FILE_NAME_EMPTY:
-        $alert = $strings::ERROR_FILE_NAME_EMPTY;
-        break;
-
-      case FileOperationResult::ERROR_FILE_NAME_WRONG:
-        $alert = $strings::ERROR_FILE_NAME_WRONG;
-        break;
-
-      case FileOperationResult::ERROR_FILES_LIMIT_EXCEEDED:
-        $alert = sprintf($strings::ERROR_LIMIT_EXCEEDED, Settings::MAX_FILES_PER_USER);
-        break;
-
-      default:
-        $alert = $strings::ERROR_SERVER_FAILURE;
+    if ($uploadID) {
+      $fileOperationResult = $session->GetArrayValue(self::SESSION_KEY_UPLOADS, $uploadID);
+      if ($fileOperationResult) {
+        $session->UnSetArrayValue(self::SESSION_KEY_UPLOADS, $uploadID);
+        $strings = FileUploadStrings::GetInstance($request->Language);
+        $statusText = $this->GetResultStatusText($fileOperationResult, $strings);
+      }
     }
 
-    $callback = new FilesCallback($alert);
-    $context->PushCallback($callback);
+    echo $statusText;
   }
 
   protected function SaveUploadedFile($userID, $files) {
@@ -247,6 +217,53 @@ class FilesController extends Controller {
     $result = $model->SaveFile($saveRequest);
 
     return $result;
+  }
+
+  protected function GetResultStatusText($fileOperationResult, FileUploadStrings $strings) {
+    switch ($fileOperationResult) {
+      case FileOperationResult::OPERATION_SUCCEEDED:
+        return '';
+
+      case FileOperationResult::ERROR_SERVER_FAILURE:
+        return $strings::ERROR_SERVER_FAILURE;
+
+      case FileOperationResult::ERROR_INVALID_REQUEST:
+        return $strings::ERROR_INVALID_REQUEST;
+
+      case FileOperationResult::ERROR_NO_FILE_SELECTED:
+        return $strings::ERROR_NO_FILE_SELECTED;
+
+      case FileOperationResult::ERROR_INTERRUPTED:
+        return $strings::ERROR_INTERRUPTED;
+
+      case FileOperationResult::ERROR_FILE_CORRUPTED:
+        return $strings::ERROR_FILE_CORRUPTED;
+
+      case FileOperationResult::ERROR_UNKNOWN_USER:
+        return $strings::ERROR_UNKNOWN_USER;
+
+      case FileOperationResult::ERROR_FILE_SIZE_TOO_BIG:
+        return $strings::ERROR_FILE_SIZE_TOO_BIG;
+
+      case FileOperationResult::ERROR_FILE_NAME_TOO_LONG:
+        return sprintf($strings::ERROR_FILE_NAME_TOO_LONG, FileEntity::MAX_NAME_LENGTH);
+
+      case FileOperationResult::ERROR_FILE_NAME_EMPTY:
+        return $strings::ERROR_FILE_NAME_EMPTY;
+
+      case FileOperationResult::ERROR_FILE_NAME_WRONG:
+        return $strings::ERROR_FILE_NAME_WRONG;
+
+      case FileOperationResult::ERROR_FILES_LIMIT_EXCEEDED:
+        return sprintf($strings::ERROR_LIMIT_EXCEEDED, Settings::MAX_FILES_PER_USER);
+
+      default:
+        return $strings::ERROR_SERVER_FAILURE;
+    }
+  }
+
+  protected function GetUploadID($request) {
+    return (strlen($request->Argument) == 13) ? $request->Argument : null;
   }
 
   protected function GetTimestamp($dateTimeString) {

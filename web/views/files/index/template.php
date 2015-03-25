@@ -73,11 +73,13 @@ $rules = $uploadAllowed ?
   </div>
   <script type="text/javascript">
     filesView.initialize(
-      '<?=FilesView::FIELD_NAME_SELECTED_FILE?>[]', [
+      '<?=FilesView::FIELD_NAME_SELECTED_FILE?>[]',
+      '<?=$bag->StatusUri?>', [
         '<?=$strings::ALERT_DELETE_FILES?>',
         '<?=$strings::ALERT_DELETE_FILE?>',
         '<?=$strings::HINT_DELETE_SELECTED?>',
-        '<?=$strings::HINT_NOTHING_DELETE?>'
+        '<?=$strings::HINT_NOTHING_DELETE?>',
+        '<?=$strings::ERROR_UPLOAD_ERROR?>'
       ]
     );
   </script>

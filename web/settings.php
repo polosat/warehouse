@@ -19,5 +19,5 @@ class Settings {
   // Session timeout in seconds
   const SESSION_TIMEOUT = 600;
 
-  const VERSION = '5.3';
+  const VERSION = '5.5';
 }

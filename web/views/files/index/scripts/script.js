@@ -1,11 +1,14 @@
 function FilesView() {
-  this.uploadRequestSent = false;
+  this.frameLoaded = false;
+  this.ajax = null;
+  this.uploadInProgress = false;
+  this.connectionError = false;
   this.currentUri = location.href;
   this.timerID = null;
   this.elapsed = 0;
 }
 
-FilesView.prototype.initialize = function(filesInputName, deleteStrings) {
+FilesView.prototype.initialize = function(filesInputName, statusUri, strings) {
   var self = this;
   this.uploadButton = document.getElementById('tb_upload_file');
   this.deleteButton = document.getElementById('tb_delete_file');
@@ -17,11 +20,14 @@ FilesView.prototype.initialize = function(filesInputName, deleteStrings) {
   this.filesCount = this.files.length;
   this.filesSelected = 0;
   this.selectAll = document.getElementById('select_all');
-  this.alertDeleteFiles = deleteStrings[0];
-  this.alertDeleteFile = deleteStrings[1];
-  this.hintDelete = deleteStrings[2];
-  this.hintNoDelete = deleteStrings[3];
+  this.alertDeleteFiles = strings[0];
+  this.alertDeleteFile = strings[1];
+  this.hintDelete = strings[2];
+  this.hintNoDelete = strings[3];
+  this.alertUploadError = strings[4];
+  this.statusUri = statusUri;
   this.checkResponseTimeout = 200; // ms
+  this.requestStatusTimeout = 500; // ms
 
   if (this.uploadFrame) {
     appendClass(this.uploadButton, 'tb-button-enabled');
@@ -122,7 +128,8 @@ FilesView.prototype.onDeleteButtonClick = function() {
 };
 
 FilesView.prototype.onUploadFrameReady = function(frame) {
-  if (!this.uploadRequestSent) {
+  if (!this.frameLoaded) {
+    this.frameLoaded = true;
     var frameDocument = frame.contentDocument || frame.contentWindow.document;
     var uploadInput = frameDocument.getElementById('upload_input');
 
@@ -130,9 +137,13 @@ FilesView.prototype.onUploadFrameReady = function(frame) {
     uploadInput.onchange = function() {
       if (uploadInput.value) {
         frame.blur(); // FF BUG#554039 fix
-        self.uploadRequestSent = true;
+        self.uploadInProgress = true;
         self.startTimer();
         self.submitForm(uploadInput.parentNode);
+        self.ajax = new XmlHttpObject(function(ajax) {
+          self.checkStatus(self, ajax)
+        });
+        self.requestStatus();
         self.checkResponse();
       }
     };
@@ -159,27 +170,62 @@ FilesView.prototype.disableControls = function() {
 };
 
 FilesView.prototype.checkResponse = function() {
-  var self = this;
-  var finished = false;
-  try {
-    var frameDocument = this.uploadFrame.contentDocument || this.uploadFrame.contentWindow.document;
-    finished = frameDocument.getElementById('upload_input') ? false : true;
-  }
-  catch(e) {
-    finished = true;
-  }
-  if (finished) {
-    this.stopTimer();
-    navigate(this.currentUri);
-  }
-  else {
-    if (this.checkResponseTimeout < 1000) {
-      this.checkResponseTimeout += 10;
+  if (this.uploadInProgress) {
+    try {
+      var self = this;
+      var frameDocument = this.uploadFrame.contentDocument || this.uploadFrame.contentWindow.document;
+      var statusMessage = frameDocument.getElementById('status_message');
+
+      if (statusMessage) {
+        this.uploadInProgress = false;
+        this.stopTimer();
+        var messageText = statusMessage.innerHTML;
+
+        if (messageText) {
+          messageBox.show(messageText, MessageBox.TypeError, MessageBox.ButtonOK, function() {
+            navigate(self.currentUri);
+          });
+        }
+        else {
+          navigate(self.currentUri);
+        }
+      }
+      else {
+        this.checkResponseTimeout += (this.checkResponseTimeout < 1000 ? 10 : 0);
+        setTimeout(function() {
+          self.checkResponse();
+        }, this.checkResponseTimeout);
+      }
     }
-    setTimeout(function() {
-      self.checkResponse();
-    }, this.checkResponseTimeout);
+    catch(e) {
+      this.uploadInProgress = false;
+      this.connectionError = true;
+    }
   }
+};
+
+FilesView.prototype.checkStatus = function(self, ajax) {
+  if (this.uploadInProgress || this.connectionError) {
+    var messageText = (ajax.xhr.status == 200) ? ajax.xhr.responseText : this.alertUploadError;
+    if (messageText) {
+      self.uploadInProgress = false;
+      self.stopTimer();
+      messageBox.show(messageText, MessageBox.TypeError, MessageBox.ButtonOK, function() {
+        navigate(self.currentUri);
+      });
+    }
+    else {
+      this.requestStatus();
+      this.requestStatusTimeout += (this.requestStatusTimeout < 10000 ? 2000 : 0);
+    }
+  }
+};
+
+FilesView.prototype.requestStatus = function() {
+  var self = this;
+  setTimeout(function () {
+    self.ajax.send(self.statusUri);
+  }, this.requestStatusTimeout);
 };
 
 FilesView.prototype.startTimer = function() {

@@ -106,4 +106,32 @@ class Session {
       unset($_SESSION[$key]);
     }
   }
+
+  public function GetArrayValue($arrayKey, $valueKey) {
+    if ($this->IsClosed())
+      throw new LogicException('Can not read from a closed session');
+
+    return isset($_SESSION[$arrayKey]) && isset($_SESSION[$arrayKey][$valueKey]) ?
+      $_SESSION[$arrayKey][$valueKey] :
+      null;
+  }
+
+  public function SetArrayValue($arrayKey, $valueKey, $value) {
+    if ($this->IsClosed())
+      throw new LogicException('Can not read from a closed session');
+
+    if (!isset($_SESSION[$arrayKey])) {
+      $_SESSION[$arrayKey] = array();
+    }
+    $_SESSION[$arrayKey][$valueKey] = $value;
+  }
+
+  public function UnSetArrayValue($arrayKey, $valueKey) {
+    if ($this->IsClosed())
+      throw new LogicException('Can not read from a closed session');
+
+    if (isset($_SESSION[$arrayKey]) && isset($_SESSION[$arrayKey][$valueKey])) {
+      unset($_SESSION[$arrayKey][$valueKey]);
+    }
+  }
 }
