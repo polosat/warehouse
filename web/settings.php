@@ -9,11 +9,11 @@ class Settings {
   const DB_PASSWORD = 'SecureP@ssw0rd';
   const DB_CHARSET  = 'utf8';
 
-  const STORAGE_PATH = '/Users/polosat/Code/bitbucket/smalltools/tallinn/warehouse/';
+  const STORAGE_PATH = '/Users/polosat/Code/bitbucket/smalltools/tallinn/warehouse/'; // TODO: Get from nginx?
   const STORAGE_URI  = '/warehouse/';
 
   const MAX_FILES_PER_USER = 20;
-  const MAX_FILE_SIZE      = 1048576;
+  const MAX_FILE_SIZE      = 1048576; //TODO Get from ini and also change resource string
   const SHOW_DECIMAL_SIZE  = false;
 
   // Session timeout in seconds
