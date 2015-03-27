@@ -8,6 +8,6 @@ class InvalidRequestException extends DomainException {
 
 class DatabaseException extends RuntimeException {
   function __construct(PDOException $pdoException) {
-    parent::__construct('Database error', 0, $pdoException);
+    parent::__construct('Database error: ' . $pdoException->getMessage(), 0, $pdoException);
   }
 }
