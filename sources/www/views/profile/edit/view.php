@@ -31,7 +31,7 @@ class EditProfileView extends LayoutView {
     $this->Bag = $bag;
 
     $this->birthdayPicker = new DatePicker(
-      self::FIELD_NAME_BIRTHDAY,
+      'birthday',
       $strings->GetLanguage(),
       ProfileModel::GetMinAllowedBirthdayDate(),
       ProfileModel::GetMaxAllowedBirthdayDate()
