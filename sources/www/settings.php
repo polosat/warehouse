@@ -9,7 +9,7 @@ class Settings {
   const DB_PASSWORD = '$ecureP@$$w0rd';
   const DB_CHARSET  = 'utf8';
 
-  const STORAGE_PATH = '/warehouse/storage/'; // TODO: Get from nginx?
+  const STORAGE_PATH = '/home/warehouse/storage/'; // TODO: Get from nginx?
   const STORAGE_URI  = '/storage/';
 
   const MAX_FILES_PER_USER = 20;
@@ -19,5 +19,5 @@ class Settings {
   // Session timeout in seconds
   const SESSION_TIMEOUT = 600;
 
-  const VERSION = '5.5';
+  const VERSION = '5.6';
 }

@@ -4,23 +4,9 @@
 Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/trusty64"
   config.vm.network "private_network", ip: "192.168.33.30"
-  config.vm.network :forwarded_port, host: 3307, guest: 3306
-
   config.vm.provision :shell, path: "provision/bootstrap.sh"
 
-  config.vm.synced_folder "../sources/www/", "/home/warehouse/www",
-    create: true,
-    owner: "www-data",
-    group: "www-data",
-    mount_options: ["dmode=770,fmode=660"]
-
-  config.vm.synced_folder "../sources/logs/", "/home/warehouse/logs",
-    create: true,
-    owner: "www-data",
-    group: "www-data",
-    mount_options: ["dmode=770,fmode=660"]
-
-  config.vm.synced_folder "../sources/storage/", "/home/warehouse/storage",
+  config.vm.synced_folder "../sources/", "/home/warehouse",
     create: true,
     owner: "www-data",
     group: "www-data",

@@ -22,7 +22,7 @@ rm -rf /etc/nginx/sites-enabled/default
 service nginx restart
 
 echo "Installing PHP"
-apt-get install php5-common php5-dev php5-cli php5-fpm php5-mysqlnd -y
+apt-get install php5-common php5-dev php5-cli php5-fpm php5-mysqlnd php5-curl -y
 
 echo "Installing xdebug"
 mkdir /tmp/xdebug
