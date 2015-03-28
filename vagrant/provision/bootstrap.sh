@@ -17,6 +17,9 @@ add-apt-repository ppa:nginx/stable -y
 apt-get update -y
 apt-get dist-upgrade -y
 
+echo "Installing unzip"
+apt-get install unzip -y
+
 echo "Installing nginx"
 apt-get install nginx -y
 
@@ -65,3 +68,9 @@ mysql -uroot -p${db_root_password} -e "$query"
 echo "Enabling remote connections to MySQL"
 sed -i 's/\(^\s*bind-address\s*=\s*127\.0\.0\.1\s*$\)/#\1/' /etc/mysql/my.cnf
 service mysql restart
+
+echo "Installing phantomjs"
+wget -P /tmp/phantomjs/ https://bitbucket.org/polosat/packages/src/master/phantomjs/2.0.0/bin/ubuntu/trusty64/phantomjs.zip
+unzip /tmp/phantomjs/phantomjs.zip -d /tmp/phantomjs
+install -m 755 /tmp/phantomjs/phantomjs /usr/local/bin
+rm -r /tmp/phantomjs
