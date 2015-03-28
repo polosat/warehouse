@@ -6,6 +6,12 @@ service ssh restart
 echo "Granting permissions to the vagrant user"
 usermod -a -G www-data vagrant
 
+echo "Creating supplementary folders"
+mkdir -p -m 770 /home/warehouse/logs
+mkdir -p -m 770 /home/warehouse/storage
+chown www-data:www-data /home/warehouse/logs
+chown www-data:www-data /home/warehouse/storage
+
 echo "Updating repositories"
 add-apt-repository ppa:nginx/stable -y
 apt-get update -y
