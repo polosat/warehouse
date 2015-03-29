@@ -2,3 +2,4 @@
 vagrant/.vagrant
 sources/storage
 sources/logs
+sources/test/tests/_output

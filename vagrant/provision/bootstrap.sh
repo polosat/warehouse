@@ -17,9 +17,6 @@ add-apt-repository ppa:nginx/stable -y
 apt-get update -y
 apt-get dist-upgrade -y
 
-echo "Installing unzip"
-apt-get install unzip -y
-
 echo "Installing nginx"
 apt-get install nginx -y
 
@@ -31,22 +28,15 @@ rm -rf /etc/nginx/sites-enabled/default
 service nginx restart
 
 echo "Installing PHP"
-apt-get install php5-common php5-dev php5-cli php5-fpm php5-mysqlnd php5-curl -y
+apt-get install php5-common php5-cli php5-fpm php5-mysqlnd php5-curl -y
 
 echo "Installing xdebug"
-mkdir /tmp/xdebug
-cd /tmp/xdebug
-wget http://xdebug.org/files/xdebug-2.3.2.tgz
-tar -xvzf xdebug-2.3.2.tgz
-cd xdebug-2.3.2
-phpize
-./configure
-make
-cp modules/xdebug.so /usr/lib/php5/20121212
+wget --no-verbose -P /tmp/xdebug/ https://bitbucket.org/polosat/packages/downloads/xdebug-2.3.2-ubuntu-trusty64.tar.bz2
+tar xjf /tmp/xdebug/xdebug-2.3.2-ubuntu-trusty64.tar.bz2 -C /tmp/xdebug
+install -m 644 -T /tmp/xdebug/xdebug-2.3.2.so /usr/lib/php5/20121212/xdebug.so
 echo -e '\nzend_extension = /usr/lib/php5/20121212/xdebug.so\n' >> /etc/php5/mods-available/xdebug.ini
 php5enmod xdebug
-cd /tmp
-rm -rf xdebug
+rm -r /tmp/xdebug
 service php5-fpm restart
 
 echo "Installing MySQL"
@@ -55,22 +45,25 @@ debconf-set-selections <<< "mysql-server mysql-server/root_password password $db
 debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $db_root_password"
 apt-get install mysql-server-5.6 -y
 
-echo "Creatting application databases";
+echo "Creating application databases";
 query="
- source /vagrant/provision/sql/databases.sql;
- source /vagrant/provision/sql/users.sql;
+ source /home/warehouse/sources/sql/databases.sql;
+ source /home/warehouse/sources/sql/users.sql;
  use warehouse;
- source /vagrant/provision/sql/tables.sql;
- use test_warehouse;
- source /vagrant/provision/sql/tables.sql;"
+ source /home/warehouse/sources/sql/tables.sql;"
 mysql -uroot -p${db_root_password} -e "$query"
 
 echo "Enabling remote connections to MySQL"
 sed -i 's/\(^\s*bind-address\s*=\s*127\.0\.0\.1\s*$\)/#\1/' /etc/mysql/my.cnf
 service mysql restart
 
-echo "Installing phantomjs"
-wget -P /tmp/phantomjs/ https://bitbucket.org/polosat/packages/src/master/phantomjs/2.0.0/bin/ubuntu/trusty64/phantomjs.zip
-unzip /tmp/phantomjs/phantomjs.zip -d /tmp/phantomjs
-install -m 755 /tmp/phantomjs/phantomjs /usr/local/bin
+echo "Installing phantomjs as a service"
+wget --no-verbose -P /tmp/phantomjs/ https://bitbucket.org/polosat/packages/downloads/phantomjs-2.0.0-ubuntu-trusty64.tar.bz2
+tar xjf /tmp/phantomjs/phantomjs-2.0.0-ubuntu-trusty64.tar.bz2 -C /tmp/phantomjs
+install -m 755 /tmp/phantomjs/phantomjs-2.0.0 /usr/sbin
+install -m 755 -T /vagrant/provision/config/phantomjs_init.d /etc/init.d/phantomjs
+install -m 644 -T /vagrant/provision/config/phantomjs_defaults /etc/default/phantomjs
+ln -s /usr/sbin/phantomjs-2.0.0 /usr/sbin/phantomjs
 rm -r /tmp/phantomjs
+update-rc.d phantomjs defaults
+service phantomjs start

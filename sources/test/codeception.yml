@@ -1,0 +1,17 @@
+actor: Tester
+paths:
+  tests:    warehouse
+  log:      warehouse/_output
+  data:     warehouse/_data
+  helpers:  warehouse/_support
+settings:
+  bootstrap:    _bootstrap.php
+  colors:       true
+  memory_limit: 1024M
+modules:
+  config:
+    Db:
+      dsn:      'mysql:host=localhost;dbname=warehouse;charset=utf8;'
+      user:     'warehouse'
+      password: '$ecureP@$$w0rd'
+      dump:     '../sql/tables.sql'
