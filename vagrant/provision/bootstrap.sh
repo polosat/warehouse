@@ -12,12 +12,9 @@ mkdir -p -m 770 /home/warehouse/storage
 chown www-data:www-data /home/warehouse/logs
 chown www-data:www-data /home/warehouse/storage
 
-echo "Updating repositories"
+echo "Installing nginx"
 add-apt-repository ppa:nginx/stable -y
 apt-get update -y
-apt-get dist-upgrade -y
-
-echo "Installing nginx"
 apt-get install nginx -y
 
 echo "Configuring nginx"
@@ -47,10 +44,10 @@ apt-get install mysql-server-5.6 -y
 
 echo "Creating application databases";
 query="
- source /home/warehouse/sources/sql/databases.sql;
- source /home/warehouse/sources/sql/users.sql;
+ source /home/warehouse/sql/databases.sql;
+ source /home/warehouse/sql/users.sql;
  use warehouse;
- source /home/warehouse/sources/sql/tables.sql;"
+ source /home/warehouse/sql/tables.sql;"
 mysql -uroot -p${db_root_password} -e "$query"
 
 echo "Enabling remote connections to MySQL"
@@ -67,3 +64,7 @@ ln -s /usr/sbin/phantomjs-2.0.0 /usr/sbin/phantomjs
 rm -r /tmp/phantomjs
 update-rc.d phantomjs defaults
 service phantomjs start
+
+echo "Building tests"
+cd /home/warehouse/test
+php codecept.phar build
