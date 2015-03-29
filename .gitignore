@@ -2,4 +2,5 @@
 vagrant/.vagrant
 sources/storage
 sources/logs
-
+sources/test/warehouse/_output
+sources/test/warehouse/*/*Tester.php
