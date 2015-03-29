@@ -53,6 +53,7 @@ function DatePicker (config) {
     wrapper.insertBefore(pattern, input);
 
     icon = document.createElement('div');
+    icon.id = config.inputId + '_dp_icon';
     var iconBackground = document.createElement('div');
     iconBackground.className = 'date-picker-icon-background';
     iconBackground.style.width = iconWidth + inputPadding + 'px';
@@ -507,6 +508,7 @@ function DatePicker (config) {
           var date = new Date();
           date.setHours(0, 0, 0, 0);
           cell.value = date;
+          cell.td.id = config.inputId + "_dp_day_" + i + "_" + j;
         }
         cell.td.appendChild(cell.text);
       }
@@ -572,7 +574,6 @@ function DatePicker (config) {
     return view;
   };
 
-
   var getTypedDate = function() {
     var match = (config.minYear < 0) ? /^(\d{1,2})\/(\d{1,2})\/(\d{4}\-?)$/ : /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
     var dmy = input.value.match(match);
@@ -587,14 +588,12 @@ function DatePicker (config) {
     return (date.getDate() == day && date.getMonth() == month && date.getFullYear() == year) ? date : null;
   };
 
-
   var preventBlur = function () {
     return false;
   };
 
   initialize();
 }
-
 
 DatePicker.Config = function(inputId, inputPattern, weekDaysNames, shortMonthsNames, monthsNames, sundayFirst,
   minYear, minMonth, minDay, maxYear, maxMonth, maxDay) {
@@ -611,7 +610,6 @@ DatePicker.Config = function(inputId, inputPattern, weekDaysNames, shortMonthsNa
   this.maxMonth         = maxMonth;
   this.maxDay           = maxDay;
 };
-
 
 function Table(rows, cols) {
   this.cells = [];
@@ -631,7 +629,6 @@ function Table(rows, cols) {
     }
   }
 }
-
 
 Table.Cell = function(td) {
   this.disabled = true;
