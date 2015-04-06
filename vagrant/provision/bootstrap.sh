@@ -42,7 +42,7 @@ debconf-set-selections <<< "mysql-server mysql-server/root_password password $db
 debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $db_root_password"
 apt-get install mysql-server-5.6 -y
 
-echo "Creating application databases";
+echo "Creating the application database";
 query="
  source /home/warehouse/sql/databases.sql;
  source /home/warehouse/sql/users.sql;
@@ -66,5 +66,4 @@ update-rc.d phantomjs defaults
 service phantomjs start
 
 echo "Building tests"
-cd /home/warehouse/test
-php codecept.phar build
+php /home/warehouse/test/codecept.phar build -c /home/warehouse/test

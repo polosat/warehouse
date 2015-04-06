@@ -15,7 +15,7 @@ CREATE TABLE Users (
   UNIQUE KEY uxUserID_TraceID (UserID,TraceID),
   KEY ixPasswordHash (PasswordHash),
   KEY ixUserID (UserID)
-) ENGINE=InnoDB;
+);
 
 CREATE TABLE Files (
   FileID        bigint(10) unsigned   NOT NULL AUTO_INCREMENT,
@@ -30,10 +30,4 @@ CREATE TABLE Files (
   KEY ixUploadedOn (UploadedOn),
   KEY ixDeletedOn (DeletedOn),
   CONSTRAINT fkFiles_Users FOREIGN KEY (UserID) REFERENCES Users (UserID)
-) ENGINE=InnoDB;
-
-
-# SET FOREIGN_KEY_CHECKS = 0;
-# TRUNCATE `Files`;
-# TRUNCATE `Users`;
-# SET FOREIGN_KEY_CHECKS = 1;
+);
