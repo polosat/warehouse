@@ -1,19 +1,16 @@
-# Codeception Test Suite Configuration
-
-# suite for acceptance tests.
-# perform tests in browser using the WebDriver or PhpBrowser.
-# If you need both WebDriver and PHPBrowser tests - create a separate suite.
-
-# TODO Implement storage directory cleaning before each suite run
 class_name: AcceptanceTester
 modules:
   enabled:
-    - Db
+    - DbHelper
+    - Filesystem
     - WebDriver
     - AcceptanceHelper
   config:
-    WebDriver:
-      url: 'http://192.168.33.30/'
-      port: 4444
-      browser: firefox
-      wait: 0
+    AcceptanceHelper:
+      storage: ../storage
+      cleanup: true
+    DbHelper:
+      dump:
+        - ../sql/tables.sql
+        - warehouse/_data/sql/add_user_atester.sql
+

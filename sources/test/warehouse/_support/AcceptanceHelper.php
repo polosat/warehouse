@@ -1,10 +1,23 @@
 <?php
 namespace Codeception\Module;
 
-// here you can define custom actions
-// all public methods declared in helper class will be available in $I
+use Codeception\Module;
+use Codeception\Configuration as Configuration;
 
-class AcceptanceHelper extends \Codeception\Module
-{
+class AcceptanceHelper extends Module {
+  protected $requiredFields = ['storage'];
+  protected $config = ['cleanup' => true];
 
+  public function _before() {
+    $this->_cleanupData();
+  }
+
+  public function _cleanupData() {
+    if ($this->config['cleanup']) {
+      /** @var Filesystem $fileSystem */
+      $fileSystem = $this->getModule('Filesystem');
+      $path = Configuration::projectDir() . $this->config['storage'];
+      $fileSystem->cleanDir($path);
+    }
+  }
 }

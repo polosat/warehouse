@@ -10,8 +10,12 @@ settings:
   memory_limit: 1024M
 modules:
   config:
-    Db:
-      dsn:      'mysql:host=localhost;dbname=warehouse;charset=utf8;'
-      user:     'warehouse'
-      password: '$ecureP@$$w0rd'
-      dump:     '../sql/tables.sql'
+    DbHelper:
+      dsn:      mysql:host=192.168.33.30;dbname=warehouse;charset=utf8;
+      user:     warehouse
+      password: $ecureP@$$w0rd
+    WebDriver:
+      url:      http://192.168.33.30/
+      port:     4444
+      browser:  firefox
+      wait:     0

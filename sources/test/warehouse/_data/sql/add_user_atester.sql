@@ -1,0 +1,2 @@
+# atester:Te$tP@$$w0rd
+INSERT INTO `Users` VALUES ('1', '1', 'atester', '$2y$08$sgra2cQPvHWNWwE75hxOmuxglxdmVB3/EKY.kJZIqy3un/MgQWz4S', 'Acceptance', 'Tester', null, null, null, '0', '2015-03-31 11:19:34');
